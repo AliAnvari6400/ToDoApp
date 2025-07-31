@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Page Title</title>
+</head>
+<body>
+
+    <ul>
+        {% for task in tasks %}
+            <li>{{ task.id }} - {{ task.author }} - {{ task.title }} - {{ task.status }}</li>
+        {% endfor %}
+    </ul>
+
+</body>
+</html> 
