@@ -1,9 +1,12 @@
 from django.urls import path
-#from .views import TaskCreateView, TaskListView,TaskEditView,TaskDeleteView,TaskCompleteView
+from django.contrib.auth.views import LoginView,LogoutView
+from .views import SignUpView
 
 app_name = 'accounts'
 
-# urlpatterns = [
-#     path('task/create/', TaskCreateView.as_view(), name = 'task-create'),
-#     path('task/', TaskListView.as_view(), name = 'task-list'),
-# ]
+urlpatterns = [
+    path('login/', LoginView.as_view(redirect_field_name='continue_to'), name='login'),
+    path('logout/', LogoutView.as_view(next_page='/login/'), name='logout'),
+    path('signup/', SignUpView.as_view(), name='signup'),
+  
+]
