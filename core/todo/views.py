@@ -1,7 +1,7 @@
 from django.views.generic import CreateView,ListView,UpdateView,DeleteView
 from .models import Task
 
-# Create your views here.
+# Create,list,edit,delete and complete view for tasks
 class TaskCreateView(CreateView):
     model = Task
     fields = ['author','title']
