@@ -11,31 +11,39 @@ class MyLoginRequiredMixin(LoginRequiredMixin):
 
 
 # Create,list,edit,delete and complete view for tasks
-class TaskCombinedView(MyLoginRequiredMixin,CreateView,ListView):
-    model = Task
-    form_class = TaskForm
-    #fields = ['author','title']
-    success_url = '/todo/task/'
-    template_name = 'todo/task.html'
-    ordering = '-created_date'
-    context_object_name = 'tasks'
-    paginate_by = 10
-    
-    def form_valid(self,form):
-        form.instance.author.user = self.request.user
-        return super().form_valid(form)
 
-# class TaskListView(MyLoginRequiredMixin,ListView):
-#     model = Task
-#     paginate_by = 100
-#     context_object_name = 'tasks'
-#     template_name = 'todo/task.html'
-#     ordering = '-created_date'
-    
-class TaskEditView(MyLoginRequiredMixin,UpdateView):
+class TaskView(MyLoginRequiredMixin,CreateView,ListView):
     model = Task
+    #form_class = TaskForm
     fields = ['author','title']
     success_url = '/todo/task/'
+    template_name = 'todo/task.html'
+    context_object_name = 'tasks'
+    paginate_by = 50
+    ordering = '-created_date'
+        
+    def form_valid(self,form):
+        instance = form.save(commit=False) 
+        instance.author.user = self.request.user
+        instance.save()
+        return super().form_valid(form)
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        current_user = self.request.user
+        queryset = queryset.filter(author__user=current_user)
+        return queryset
+
+class TaskEditView(MyLoginRequiredMixin,UpdateView):
+    model = Task
+    fields = ['title']
+    success_url = '/todo/task/'
+    
+    def form_valid(self,form):
+        instance = form.save(commit=False) 
+        instance.author.user = self.request.user
+        instance.save()
+        return super().form_valid(form)
     
 class TaskDeleteView(MyLoginRequiredMixin,DeleteView):
     model = Task
@@ -43,5 +51,14 @@ class TaskDeleteView(MyLoginRequiredMixin,DeleteView):
 
 class TaskCompleteView(MyLoginRequiredMixin,UpdateView):
     model = Task
-    fields = ['status']
+    fields = []
     success_url = '/todo/task/'
+    
+    def form_valid(self,form):
+        instance = form.save(commit=False) 
+        if instance.status == False:
+           instance.status = True
+        else:
+          instance.status = False  
+        instance.save()
+        return super().form_valid(form)

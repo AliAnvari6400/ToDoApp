@@ -4,7 +4,7 @@
 <title>Page Title</title>
 </head>
 <body>
-
+    
     <form method="post">{% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Save">
@@ -14,3 +14,84 @@
 </html> 
 
 
+
+{% comment %} 
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <title>ToDoApp</title>
+  <!-- MDB icon -->
+  <link rel="icon" href="{% static "todo/img/mdb-favicon.ico" %}" type="image/x-icon" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css" />
+  <!-- Google Fonts Roboto -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" />
+  <!-- MDB -->
+  <link rel="stylesheet" href="{% static "todo/css/bootstrap-to-do-list.min.css" %}" />
+</head>
+
+<body>
+  <!-- Start your project here-->
+  <style>
+    #list1 .form-control {
+      border-color: transparent;
+    }
+    #list1 .form-control:focus {
+      border-color: transparent;
+      box-shadow: none;
+    }
+    #list1 .select-input.form-control[readonly]:not([disabled]) {
+      background-color: #fbfbfb;
+    }
+  </style>
+  <section class="vh-100">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col">
+          <div class="card" id="list1" style="border-radius: .75rem; background-color: #eff1f2;">
+            <div class="card-body py-4 px-4 px-md-5">
+
+              <p class="h1 text-center mt-3 mb-4 pb-3 text-primary">
+                
+                To Do App
+              </p>
+
+              <div class="pb-2">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="d-flex flex-row align-items-center">
+                        <form method="post">{% csrf_token %}
+                            {{ form.as_p }}
+                            <input type="submit" value="Save">
+                        </form>
+                    
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+
+              <hr class="my-4">
+
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- End your project here-->
+
+  <!-- MDB -->
+  <script type="text/javascript" src= "{% static "todo/js/mdb.min.js" %}"></script>
+  <!-- Custom scripts -->
+  <script type="text/javascript"></script>
+</body>
+
+</html> {% endcomment %}
