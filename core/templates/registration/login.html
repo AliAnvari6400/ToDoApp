@@ -17,7 +17,6 @@
 
 
 
-
 <!DOCTYPE html>
 {%load static%}
 {% comment %} {%load compress%} {% endcomment %}
@@ -30,7 +29,7 @@
     <meta name="keywords" content="Foodeiblog, unica, creative, html">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Foodeiblog | Template</title>
+    <title>ToDoApp | Login</title>
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600,700,800,900&display=swap"
@@ -59,11 +58,10 @@
     <div class="signin">
         <div class="signin__warp">
             <div class="signin__content">
-                <div class="signin__logo">
+                {% comment %} <div class="signin__logo">
                     <a href=""><img src="{% static "accounts/img/siign-in-logo.png" %}" alt=""></a>
-                </div>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt labore dolore
-                    magna aliqua viverra.</p>
+                </div> {% endcomment %}
+                <p></p>
                 <div class="signin__form">
                     <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item">
@@ -81,9 +79,8 @@
                     <div class="tab-content">
                         <div class="tab-pane" id="tabs-1" role="tabpanel">
                             <div class="signin__form__text">
-                                <form action="" method="POST">
+                                <form action="{% url 'accounts:signup' %}" method="POST">
                                     {% csrf_token %}
-                                    <input type="text" name="username" placeholder="User Name" required>
                                     <input type="email" name="email" placeholder="Email Address" required>
                                     <input type="password" name="password1" placeholder="Password" required>
                                     <input type="password" name="password2" placeholder="Confirm Password" required>
@@ -93,10 +90,9 @@
                         </div>
                         <div class="tab-pane active" id="tabs-2" role="tabpanel">
                             <div class="signin__form__text">
-                                <form action="" method="POST">
+                                <form action="{% url 'accounts:login' %}" method="POST">
                                     {% csrf_token %}
-                                    <input type="text" name='next' value={{next}} hidden required>
-                                    <input type="text" name="username" placeholder="Username or Email" required>
+                                    <input type="text" name="username" placeholder="Email Address" required>
                                     <input type="password" name="password" placeholder="Password" required>
                                     <button type="submit" class="site-btn">Log In</button>
                                     <br><br>
