@@ -12,17 +12,17 @@ class MyLoginRequiredMixin(LoginRequiredMixin):
 # Create,list,edit,delete and complete view for tasks
 class TaskCreateView(MyLoginRequiredMixin,CreateView):
     model = Task 
-    #form_class = TaskForm
-    fields = ['author','title']
+    form_class = TaskForm
+    # fields = ['author','title']
     success_url = '/todo/task/'
     # template_name = 'todo/task.html'
     
     def form_valid(self,form):
         instance = form.save(commit=False) 
-        form.instance.author.user = self.request.user
+        instance.author__user = self.request.user
         instance.save()
-        return super().form_valid(form)
-    
+        return super(TaskCreateView,self).form_valid(form)
+
 class TaskListView(MyLoginRequiredMixin,ListView):
     model = Task
     template_name = 'todo/task.html'
@@ -39,14 +39,14 @@ class TaskListView(MyLoginRequiredMixin,ListView):
 
 class TaskEditView(MyLoginRequiredMixin,UpdateView):
     model = Task
-    fields = ['title']
+    fields = ['author','title']
     success_url = '/todo/task/'
     
-    def form_valid(self,form):
-        instance = form.save(commit=False) 
-        instance.author.user = self.request.user
-        instance.save()
-        return super().form_valid(form)
+    # def form_valid(self,form):
+    #     instance = form.save(commit=False) 
+    #     instance.author.user = self.request.user
+    #     instance.save()
+    #     return super(TaskEditView,self).form_valid(form)
     
 class TaskDeleteView(MyLoginRequiredMixin,DeleteView):
     model = Task
@@ -64,4 +64,4 @@ class TaskCompleteView(MyLoginRequiredMixin,UpdateView):
         else:
           instance.status = False  
         instance.save()
-        return super().form_valid(form)
+        return super(TaskCompleteView,self).form_valid(form)

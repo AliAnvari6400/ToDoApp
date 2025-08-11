@@ -44,7 +44,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 # Create Profile model related to user:   
 class Profile(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE,null=True, blank=True)
     first_name = models.CharField(max_length=250)
     last_name = models.CharField(max_length=250)
     image = models.ImageField(blank=True, null=True)
