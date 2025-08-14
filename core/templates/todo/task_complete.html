@@ -1,4 +1,3 @@
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -7,7 +6,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <meta http-equiv="x-ua-compatible" content="ie=edge" />
-  <title>Confirm Delete</title>
+  <title>Edit Task</title>
   <!-- MDB icon -->
   <link rel="icon" href="{% static "todo/img/mdb-favicon.ico" %}" type="image/x-icon" />
   <!-- Font Awesome -->
@@ -41,21 +40,18 @@
 
               <p class="h1 text-center mt-3 mb-4 pb-3 text-primary">
                 
-                Confirm Delete
+                Edit Task
               </p>
 
               <div class="pb-2">
                 <div class="card">
                   <div class="card-body">
                     <div class="d-flex flex-row align-items-center">
-
                         <form method="post">{% csrf_token %}
-                            <p>Are you sure you want to delete "{{ object }}"?</p>
-                            {{ form }}
-                            <button type="submit" class="btn btn-primary">Confirm</button>
-                            {% comment %} <input type="submit" value="Confirm"> {% endcomment %}
+                            {% comment %} {{ form.as_p }} {% endcomment %}
+                            <input type="text" name='status' value= {{task.status}} class="form-control form-control-lg" id="exampleFormControlInput1" placeholder="edit ...">
+                            <button type="submit" class="btn btn-primary">Toggle</button>
                         </form>
-                    
                     </div>
                     
                   </div>

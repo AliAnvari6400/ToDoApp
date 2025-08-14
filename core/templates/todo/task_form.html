@@ -1,21 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Page Title</title>
-</head>
-<body>
-  
-    <form method="POST">{% csrf_token %}
-        {{form.as_p}}
-        <input type="submit" value="Save">
-    </form>
 
-</body>
-</html> 
-
-
-
-{% comment %} 
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -24,7 +7,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <meta http-equiv="x-ua-compatible" content="ie=edge" />
-  <title>ToDoApp</title>
+  <title>Edit Task</title>
   <!-- MDB icon -->
   <link rel="icon" href="{% static "todo/img/mdb-favicon.ico" %}" type="image/x-icon" />
   <!-- Font Awesome -->
@@ -58,7 +41,7 @@
 
               <p class="h1 text-center mt-3 mb-4 pb-3 text-primary">
                 
-                To Do App
+                Edit Task
               </p>
 
               <div class="pb-2">
@@ -66,8 +49,10 @@
                   <div class="card-body">
                     <div class="d-flex flex-row align-items-center">
                         <form method="post">{% csrf_token %}
-                            {{ form.as_p }}
-                            <input type="submit" value="Save">
+                            {% comment %} {{ form.as_p }} {% endcomment %}
+                            <input type="text" name='title' value= {{task.title}} class="form-control form-control-lg" id="exampleFormControlInput1" placeholder="edit ...">
+                            <button type="submit" class="btn btn-primary">Edit Save</button>
+                            {% comment %} <input type="submit" value="Edit Save"> {% endcomment %}
                         </form>
                     
                     </div>
@@ -94,4 +79,4 @@
   <script type="text/javascript"></script>
 </body>
 
-</html> {% endcomment %}
+</html>

@@ -11,33 +11,26 @@ class MyLoginRequiredMixin(LoginRequiredMixin):
     def get_login_url(self):
         return reverse_lazy('accounts:login')
 
-# Create,list,edit,delete and complete view for tasks
-class TaskCreateView(MyLoginRequiredMixin,CreateView):
-    model = Task 
-    form_class = TaskForm
-    #fields = ['author','title']
+# Combined CreateView and ListView
+class TaskView(MyLoginRequiredMixin,CreateView,ListView): 
+    model = Task
+    template_name = 'todo/task.html'
     success_url = '/todo/task/'
-    # template_name = 'todo/task.html'
+    context_object_name = 'tasks'
+    paginate_by = 50
+    form_class = TaskForm  
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        current_user = self.request.user
+        queryset = queryset.filter(author__user=current_user)
+        return queryset.order_by('-created_date')
     
     def get_initial(self):
         initial = super().get_initial()
         if self.request.user.is_authenticated:
             initial['author'] = Profile.objects.get(user=self.request.user)
         return initial
-    
-class TaskListView(MyLoginRequiredMixin,ListView):
-    model = Task
-    template_name = 'todo/task.html'
-    success_url = '/todo/task/'
-    context_object_name = 'tasks'
-    paginate_by = 50
-    ordering = '-created_date' 
-      
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        current_user = self.request.user
-        queryset = queryset.filter(author__user=current_user)
-        return queryset
 
 class TaskEditView(MyLoginRequiredMixin,UpdateView):
     model = Task
@@ -56,8 +49,9 @@ class TaskDeleteView(MyLoginRequiredMixin,DeleteView):
 
 class TaskCompleteView(MyLoginRequiredMixin,UpdateView):
     model = Task
-    fields = []
+    fields = ['status']
     success_url = '/todo/task/'
+    template_name = 'todo/task_complete.html'
     
     def form_valid(self,form):
         instance = form.save(commit=False) 
