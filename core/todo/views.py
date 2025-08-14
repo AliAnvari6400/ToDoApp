@@ -1,5 +1,7 @@
-from django.views.generic import CreateView,ListView,UpdateView,DeleteView
+from django.views.generic import ListView
+from django.views.generic.edit import CreateView,UpdateView,DeleteView
 from .models import Task
+from accounts.models import Profile
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from .forms import TaskForm
@@ -13,16 +15,16 @@ class MyLoginRequiredMixin(LoginRequiredMixin):
 class TaskCreateView(MyLoginRequiredMixin,CreateView):
     model = Task 
     form_class = TaskForm
-    # fields = ['author','title']
+    #fields = ['author','title']
     success_url = '/todo/task/'
     # template_name = 'todo/task.html'
     
-    def form_valid(self,form):
-        instance = form.save(commit=False) 
-        instance.author__user = self.request.user
-        instance.save()
-        return super(TaskCreateView,self).form_valid(form)
-
+    def get_initial(self):
+        initial = super().get_initial()
+        if self.request.user.is_authenticated:
+            initial['author'] = Profile.objects.get(user=self.request.user)
+        return initial
+    
 class TaskListView(MyLoginRequiredMixin,ListView):
     model = Task
     template_name = 'todo/task.html'
@@ -39,7 +41,7 @@ class TaskListView(MyLoginRequiredMixin,ListView):
 
 class TaskEditView(MyLoginRequiredMixin,UpdateView):
     model = Task
-    fields = ['author','title']
+    fields = ['title']
     success_url = '/todo/task/'
     
     # def form_valid(self,form):
