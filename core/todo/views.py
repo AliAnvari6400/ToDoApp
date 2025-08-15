@@ -52,15 +52,21 @@ class TaskEditView(MyLoginRequiredMixin,PermissionRequiredMixin,UpdateView):
         queryset = super().get_queryset()
         return queryset.filter(author=Profile.objects.get(user=self.request.user))
 
-class TaskDeleteView(MyLoginRequiredMixin,DeleteView):
+class TaskDeleteView(MyLoginRequiredMixin,PermissionRequiredMixin,DeleteView):
     model = Task
     success_url = '/todo/task/'
-
-class TaskCompleteView(MyLoginRequiredMixin,UpdateView):
+    permission_required = 'todo.view_task'
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(author=Profile.objects.get(user=self.request.user))
+    
+class TaskCompleteView(MyLoginRequiredMixin,PermissionRequiredMixin,UpdateView):
     model = Task
     fields = ['status']
     success_url = '/todo/task/'
     template_name = 'todo/task_complete.html'
+    permission_required = 'todo.view_task'
     
     def form_valid(self,form):
         instance = form.save(commit=False) 
@@ -70,3 +76,7 @@ class TaskCompleteView(MyLoginRequiredMixin,UpdateView):
           instance.status = False  
         instance.save()
         return super(TaskCompleteView,self).form_valid(form)
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(author=Profile.objects.get(user=self.request.user))

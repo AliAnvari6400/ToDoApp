@@ -41,15 +41,8 @@
 
               <p class="h1 text-center mt-3 mb-4 pb-3 text-primary">
                 
-                Edit Task - 
-                {{request.user}} - {{task.author}}
-
-                {% comment %} {% if perms.todo.view_task %}
-                <p>You have permission</p>
-                {% else %}
-                <p>You do not have permission</p>
-                {% endif %}
-                </p> {% endcomment %}
+                Edit Task 
+                {% comment %} {{request.user}} - {{task.author}} {% endcomment %}
 
               <div class="pb-2">
                 <div class="card">
