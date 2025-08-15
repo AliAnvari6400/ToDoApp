@@ -48,17 +48,10 @@ class TaskEditView(MyLoginRequiredMixin,PermissionRequiredMixin,UpdateView):
     success_url = '/todo/task/'
     permission_required = 'todo.view_task'
     
-    # def get(self, request, *args, **kwargs):
-    #     if Task.author != Profile.objects.get(user=self.request.user):
-    #         return super().get(request, *args, **kwargs)
-    
-    # def form_valid(self,form):
-    #     instance = form.save(commit=False) 
-    #     instance.author.user = self.request.user
-    #     instance.save()
-    #     return super(TaskEditView,self).form_valid(form)
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(author=Profile.objects.get(user=self.request.user))
 
-    
 class TaskDeleteView(MyLoginRequiredMixin,DeleteView):
     model = Task
     success_url = '/todo/task/'
