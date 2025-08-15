@@ -41,22 +41,30 @@
 
               <p class="h1 text-center mt-3 mb-4 pb-3 text-primary">
                 
-                Edit Task
-              </p>
+                Edit Task - 
+                {{request.user}} - {{task.author}}
+
+                {% comment %} {% if perms.todo.view_task %}
+                <p>You have permission</p>
+                {% else %}
+                <p>You do not have permission</p>
+                {% endif %}
+                </p> {% endcomment %}
 
               <div class="pb-2">
                 <div class="card">
                   <div class="card-body">
+                    {% comment %} {% if perms.todo.view_task %} {% endcomment %}
                     <div class="d-flex flex-row align-items-center">
+                      
                         <form method="post">{% csrf_token %}
                             {% comment %} {{ form.as_p }} {% endcomment %}
                             <input type="text" name='title' value= {{task.title}} class="form-control form-control-lg" id="exampleFormControlInput1" placeholder="edit ...">
                             <button type="submit" class="btn btn-primary">Edit Save</button>
                             {% comment %} <input type="submit" value="Edit Save"> {% endcomment %}
                         </form>
-                    
                     </div>
-                    
+                    {% comment %} {%endif%} {% endcomment %}
                   </div>
                 </div>
               </div>

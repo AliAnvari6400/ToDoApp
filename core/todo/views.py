@@ -2,9 +2,11 @@ from django.views.generic import ListView
 from django.views.generic.edit import CreateView,UpdateView,DeleteView
 from .models import Task
 from accounts.models import Profile
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
 from django.urls import reverse_lazy
 from .forms import TaskForm
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 
 # customize LoginRequiredMixin for redirect to login page first
 class MyLoginRequiredMixin(LoginRequiredMixin):
@@ -31,17 +33,31 @@ class TaskView(MyLoginRequiredMixin,CreateView,ListView):
         if self.request.user.is_authenticated:
             initial['author'] = Profile.objects.get(user=self.request.user)
         return initial
+    
+    def form_valid(self, form):
+        self.object = form.save()
+        user = self.request.user
+        content_type = ContentType.objects.get_for_model(Task)
+        view_permission = Permission.objects.get(codename='view_task', content_type=content_type)
+        user.user_permissions.add(view_permission)
+        return super().form_valid(form)
 
-class TaskEditView(MyLoginRequiredMixin,UpdateView):
+class TaskEditView(MyLoginRequiredMixin,PermissionRequiredMixin,UpdateView):
     model = Task
     fields = ['title']
     success_url = '/todo/task/'
+    permission_required = 'todo.view_task'
+    
+    # def get(self, request, *args, **kwargs):
+    #     if Task.author != Profile.objects.get(user=self.request.user):
+    #         return super().get(request, *args, **kwargs)
     
     # def form_valid(self,form):
     #     instance = form.save(commit=False) 
     #     instance.author.user = self.request.user
     #     instance.save()
     #     return super(TaskEditView,self).form_valid(form)
+
     
 class TaskDeleteView(MyLoginRequiredMixin,DeleteView):
     model = Task
