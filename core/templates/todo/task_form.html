@@ -42,7 +42,7 @@
               <p class="h1 text-center mt-3 mb-4 pb-3 text-primary">
                 
                 Edit Task 
-                {% comment %} {{request.user}} - {{task.author}} {% endcomment %}
+                {% comment %} {{task.title}}  {% endcomment %}
 
               <div class="pb-2">
                 <div class="card">
@@ -52,7 +52,7 @@
                       
                         <form method="post">{% csrf_token %}
                             {% comment %} {{ form.as_p }} {% endcomment %}
-                            <input type="text" name='title' value= {{task.title}} class="form-control form-control-lg" id="exampleFormControlInput1" placeholder="edit ...">
+                            <input type="text" name='title' value= '{{task.title}}' class="form-control form-control-lg" id="exampleFormControlInput1" placeholder="edit ...">
                             <button type="submit" class="btn btn-primary">Edit Save</button>
                             {% comment %} <input type="submit" value="Edit Save"> {% endcomment %}
                         </form>

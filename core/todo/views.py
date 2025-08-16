@@ -7,6 +7,10 @@ from django.urls import reverse_lazy
 from .forms import TaskForm
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404
+
 
 # customize LoginRequiredMixin for redirect to login page first
 class MyLoginRequiredMixin(LoginRequiredMixin):
@@ -48,10 +52,19 @@ class TaskEditView(MyLoginRequiredMixin,PermissionRequiredMixin,UpdateView):
     success_url = '/todo/task/'
     permission_required = 'todo.view_task'
     
+    
     def get_queryset(self):
-        queryset = super().get_queryset()
-        return queryset.filter(author=Profile.objects.get(user=self.request.user))
-
+        user = Profile.objects.get(user=self.request.user)
+        try:
+            queryset = super().get_queryset().filter(author=user)
+            return queryset
+        except Task.DoesNotExist: 
+            raise PermissionDenied
+        except Task.MultipleObjectsReturned:
+            raise PermissionDenied  
+            
+     
+     
 class TaskDeleteView(MyLoginRequiredMixin,PermissionRequiredMixin,DeleteView):
     model = Task
     success_url = '/todo/task/'
