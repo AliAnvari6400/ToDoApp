@@ -8,9 +8,7 @@ from .forms import TaskForm
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
-
 
 # customize LoginRequiredMixin for redirect to login page first
 class MyLoginRequiredMixin(LoginRequiredMixin):
@@ -52,18 +50,19 @@ class TaskEditView(MyLoginRequiredMixin,PermissionRequiredMixin,UpdateView):
     success_url = '/todo/task/'
     permission_required = 'todo.view_task'
     
-    
     def get_queryset(self):
-        user = Profile.objects.get(user=self.request.user)
+        queryset = super().get_queryset()
+        return queryset.filter(author=Profile.objects.get(user=self.request.user))
+         
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
         try:
-            queryset = super().get_queryset().filter(author=user)
-            return queryset
-        except Task.DoesNotExist: 
+            obj = super().get_object(queryset)
+        except Http404:
+            # Instead of 404, raise 403 here
             raise PermissionDenied
-        except Task.MultipleObjectsReturned:
-            raise PermissionDenied  
-            
-     
+        return obj
      
 class TaskDeleteView(MyLoginRequiredMixin,PermissionRequiredMixin,DeleteView):
     model = Task
@@ -73,6 +72,17 @@ class TaskDeleteView(MyLoginRequiredMixin,PermissionRequiredMixin,DeleteView):
     def get_queryset(self):
         queryset = super().get_queryset()
         return queryset.filter(author=Profile.objects.get(user=self.request.user))
+    
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        try:
+            obj = super().get_object(queryset)
+        except Http404:
+            # Instead of 404, raise 403 here
+            raise PermissionDenied
+        return obj
+     
     
 class TaskCompleteView(MyLoginRequiredMixin,PermissionRequiredMixin,UpdateView):
     model = Task
@@ -93,3 +103,14 @@ class TaskCompleteView(MyLoginRequiredMixin,PermissionRequiredMixin,UpdateView):
     def get_queryset(self):
         queryset = super().get_queryset()
         return queryset.filter(author=Profile.objects.get(user=self.request.user))
+    
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        try:
+            obj = super().get_object(queryset)
+        except Http404:
+            # Instead of 404, raise 403 here
+            raise PermissionDenied
+        return obj
+     

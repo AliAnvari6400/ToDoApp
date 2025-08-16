@@ -50,7 +50,7 @@
                     {% comment %} {% if perms.todo.view_task %} {% endcomment %}
                     <div class="d-flex flex-row align-items-center">
                       
-                        <form method="post">{% csrf_token %}
+                        <form method="post">{%csrf_token%}
                             {% comment %} {{ form.as_p }} {% endcomment %}
                             <input type="text" name='title' value= '{{task.title}}' class="form-control form-control-lg" id="exampleFormControlInput1" placeholder="edit ...">
                             <button type="submit" class="btn btn-primary">Edit Save</button>
