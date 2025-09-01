@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('todo/',include('todo.urls')),
     path('',include('accounts.urls')),
+    path('api-auth/',include('rest_framework.urls')),
 ]
 
 if settings.DEBUG:
