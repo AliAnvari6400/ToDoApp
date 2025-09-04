@@ -10,7 +10,7 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ['author','title','snippet','relative_url','absolute_url','status','created_date','updated_date']
-        read_only_fields = ['author']
+        read_only_fields= ['author']
         
     def get_absolute_url(self,obj):
         request = self.context.get('request')
@@ -19,6 +19,7 @@ class TaskSerializer(serializers.ModelSerializer):
     def to_representation(self,instance):
         rep = super().to_representation(instance)
         request = self.context.get('request')
+        rep['author'] = Profile.objects.get(user=request.user).user.email
         rep['state'] = 'list'
         #print(request.__dict__)
         if request.parser_context.get('kwargs').get('pk'):
@@ -26,10 +27,19 @@ class TaskSerializer(serializers.ModelSerializer):
             rep.pop('snippet',None)
             rep.pop('relative_url',None)
             rep.pop('absolute_url',None)
-        # else:
-        #     rep.pop('status',None)
+        rep.pop('state',None)
         return rep
     
     def create(self,validated_data):
         validated_data['author'] = Profile.objects.get(user=self.context.get('request').user.id)
         return super().create(validated_data)
+
+    def validate(self, attrs):  
+        if self.instance and self.context['request'].method == 'PATCH':
+            allowed_fields = {'status'}    # limitation for status field in only PATCH method
+            disallowed_fields = set(attrs.keys()) - allowed_fields
+            if disallowed_fields:
+                raise serializers.ValidationError(
+                    f"These fields cannot be updated: {', '.join(disallowed_fields)}"
+                )
+        return attrs

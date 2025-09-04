@@ -17,3 +17,6 @@ class TaskModelViewSet(viewsets.ModelViewSet):
     ordering_fields = ['published_date']
     
     pagination_class = DefaultPagination
+    
+    def get_queryset(self):   # list items for only owner
+        return Task.objects.filter(author__user=self.request.user)
