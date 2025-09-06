@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'todo',
     'rest_framework',
     'django_filters',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
