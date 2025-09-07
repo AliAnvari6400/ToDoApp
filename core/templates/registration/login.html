@@ -74,6 +74,11 @@
                             <div class="signin__form__text">
                                 <form action="{% url 'accounts:login' %}" method="POST">
                                     {% csrf_token %}
+
+                                    {% if request.GET.next %}
+                                    <input type="hidden" name="next" value="{{ request.GET.next }}">
+                                    {% endif %}
+                                    
                                     <input type="text" name="username" placeholder="Email Address" required>
                                     <input type="password" name="password" placeholder="Password" required>
                                     <button type="submit" class="site-btn">Log In</button>
