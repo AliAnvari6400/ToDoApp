@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'accounts',
     'todo',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_filters',
     'drf_yasg',
 ]
@@ -136,3 +137,11 @@ AUTH_USER_MODEL = 'accounts.User'
 
 LOGOUT_REDIRECT_URL = '/login/'
 #LOGIN_REDIRECT_URL = '/todo/task/'
+
+REST_FRAMEWORK = {
+    # Default authentication methods
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',  # Token auth
+        'rest_framework.authentication.SessionAuthentication',  # Browsable API login
+    ],
+}
