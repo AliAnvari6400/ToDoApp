@@ -10,5 +10,5 @@ class RegistrationApiView(generics.GenericAPIView):
         serializer = RegistrationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status=status.http_201_created)
-    
+        data = {'email':serializer.validated_data['email']}
+        return Response(data, status=status.HTTP_201_CREATED)
