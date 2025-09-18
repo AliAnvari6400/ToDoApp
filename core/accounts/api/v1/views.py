@@ -4,8 +4,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import CustomTokenObtainPairSerializer
-
+from .serializers import CustomTokenObtainPairSerializer,ChangePasswordSerializer
+from rest_framework.generics import GenericAPIView
+# from django.contrib.auth import get_user_model
+# User = get_user_model()
 
 #registration:
 class RegistrationApiView(generics.GenericAPIView):
@@ -31,3 +33,24 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
     
     
+# change password:
+class ChangepasswordAPIView(GenericAPIView):
+    serializer_class = ChangePasswordSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        user = request.user
+        
+        # Check current password
+        if not user.check_password(serializer.validated_data['current_password']):
+            return Response({'current_password': ['Wrong password.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Set new password
+        user.set_password(serializer.validated_data['new_password'])
+        user.save()
+
+        return Response({'detail': 'Password updated successfully.'}, status=status.HTTP_200_OK)
+
