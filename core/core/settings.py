@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_filters',
     'drf_yasg',
+    
 ]
 
 MIDDLEWARE = [
@@ -143,5 +144,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',  # Token auth
         'rest_framework.authentication.SessionAuthentication',  # Browsable API login
+        'rest_framework_simplejwt.authentication.JWTAuthentication', # JWT
     ],
 }
