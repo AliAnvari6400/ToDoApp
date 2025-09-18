@@ -1,11 +1,11 @@
 from django.urls import path,include
-from .views import RegistrationApiView,CustomTokenObtainPairView,CustomDiscardAuthtoken,ChangepasswordAPIView
+from .views import RegistrationApiView,CustomTokenObtainPairView,CustomDiscardAuthtoken,ChangepasswordAPIView,ProfileAPIView
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,TokenVerifyView)
 
-#app_name = 'api-v1'
+app_name = 'api-v1'
 
 urlpatterns = [
     
@@ -23,6 +23,10 @@ urlpatterns = [
     
     # change password:
     path('change-password/', ChangepasswordAPIView.as_view(), name='change-password'),
+    
+    # profile:
+    path('profile/', ProfileAPIView.as_view(), name='profile'),
+    
        
 ]
 

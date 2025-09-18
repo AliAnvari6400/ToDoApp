@@ -1,13 +1,14 @@
 from rest_framework import generics,status
-from .serializers import RegistrationSerializer
+from .serializers import RegistrationSerializer,ProfileSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer,ChangePasswordSerializer
 from rest_framework.generics import GenericAPIView
-# from django.contrib.auth import get_user_model
-# User = get_user_model()
+from rest_framework.views import APIView
+from ...models import Profile
+from django.shortcuts import get_object_or_404
 
 #registration:
 class RegistrationApiView(generics.GenericAPIView):
@@ -54,3 +55,38 @@ class ChangepasswordAPIView(GenericAPIView):
 
         return Response({'detail': 'Password updated successfully.'}, status=status.HTTP_200_OK)
 
+# profile (get/put/patch):
+# class ProfileAPIView(APIView):
+#     permission_classes = [IsAuthenticated]
+#     serializer_class = ProfileSerializer
+    
+#     def get(self, request):
+#         profile = Profile.objects.filter(user=request.user)
+#         serializer = ProfileSerializer(profile,many=True)
+#         return Response(serializer.data)
+
+#     def put(self, request):
+#         profile = Profile.objects.get(user=request.user)
+#         serializer = ProfileSerializer(profile,data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#     def patch(self, request):
+#         profile = Profile.objects.get(user=request.user)
+#         serializer = ProfileSerializer(profile,data=request.data, partial=True)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ProfileAPIView(generics.RetrieveUpdateAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Profile.objects.all()
+    def get_object(self):
+        # Return the profile for the logged-in user
+        queryset = self.get_queryset()
+        obj = get_object_or_404(queryset,user=self.request.user)
+        return obj

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ...models import User
+from ...models import User,Profile
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -47,3 +47,10 @@ class ChangePasswordSerializer(serializers.Serializer):
         # Validate password strength
         validate_password(data['new_password'])
         return data
+
+# profile serializer:
+class ProfileSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(source='user.email', read_only=True)
+    class Meta:
+        model = Profile
+        fields = ['id','email','first_name','last_name','image','description']
