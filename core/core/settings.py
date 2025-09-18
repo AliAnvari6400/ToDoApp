@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 from decouple import config
+from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -146,4 +147,23 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',  # Browsable API login
         'rest_framework_simplejwt.authentication.JWTAuthentication', # JWT
     ],
+}
+
+
+# simple JWT settings:
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),  # How long access tokens are valid
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),    # How long refresh tokens are valid
+    'ROTATE_REFRESH_TOKENS': False,                 # Issue new refresh token on refresh
+    'BLACKLIST_AFTER_ROTATION': True,               # Blacklist used refresh tokens if rotation enabled
+    'ALGORITHM': 'HS256',                            # Signing algorithm
+    'SIGNING_KEY': SECRET_KEY,                       # Usually your Django SECRET_KEY
+    'VERIFYING_KEY': None,
+    'AUTH_HEADER_TYPES': ('Bearer',),                # Expected auth header prefix
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+    'JTI_CLAIM': 'jti',
 }

@@ -2,6 +2,7 @@ from rest_framework import serializers
 from ...models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 # registration:
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -24,4 +25,12 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def create(self,validated_data):
         validated_data.pop('password1',None)
         return User.objects.create_user(**validated_data)
+
+ # Add more response data in JWT:
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['email'] = self.user.email
+        data['user_id'] = self.user.id
+        return data   
