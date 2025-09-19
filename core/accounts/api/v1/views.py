@@ -1,5 +1,5 @@
 from rest_framework import generics,status
-from .serializers import RegistrationSerializer,ProfileSerializer
+from .serializers import RegistrationSerializer,ProfileSerializer,CustomObtainAuthTokenSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -7,8 +7,10 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer,ChangePasswordSerializer
 from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
-from ...models import Profile
+from ...models import Profile,User
 from django.shortcuts import get_object_or_404
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
 
 #registration:
 class RegistrationApiView(generics.GenericAPIView):
@@ -20,6 +22,27 @@ class RegistrationApiView(generics.GenericAPIView):
         serializer.save()
         data = {'email':serializer.validated_data['email']}
         return Response(data, status=status.HTTP_201_CREATED)
+
+# login by token:
+class CustomObtainAuthToken(ObtainAuthToken):
+    serializer_class = CustomObtainAuthTokenSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(
+            data=request.data,
+            context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+
+        return Response({
+            'token': token.key,
+            'user_id': user.pk,
+            'email': user.email,
+            'is_verified': user.is_verified
+        })
+
 
 # logout by token:
 class CustomDiscardAuthtoken(APIView):
