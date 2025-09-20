@@ -12,6 +12,12 @@ from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from mail_templated import EmailMessage
+from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+from django.utils.html import strip_tags
+from django.template.loader import render_to_string
+import threading
+
 
 #registration:
 class RegistrationApiView(generics.GenericAPIView):
@@ -116,31 +122,33 @@ class ProfileAPIView(generics.RetrieveUpdateAPIView):
         return obj
     
 # email send test:
+
+def send_email_async(subject, from_email, to_email, html_content): # function that run in the new thread
+    text_content = strip_tags(html_content)
+    email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+    email.attach_alternative(html_content, "text/html")
+    email.send()
+    
 class TestEmailSend(GenericAPIView):
     def get(self, request, *args, **kwargs):
-        #user_email = request.data.get('email')
-        user_email = 'test@yahoo.com'
-        # user_first_name = request.data.get('first_name', 'User')
-        user_first_name = 'ali'
-
-        if not user_email:
-            return Response({"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST)
-
-        context = {
-            'user': {
-                'first_name': user_first_name,
-            }
-        }
-
-        try:
-            email = EmailMessage(
-                template_name='emails/welcome_email',  # refers to welcome_email.subject.txt and welcome_email.body.html
-                context=context,
-                to=[user_email],
-            )
-            email.send()
-        except Exception as e:
-            return Response({"error": f"Failed to send email: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        return Response({"message": "Templated email sent successfully."}, status=status.HTTP_200_OK)
-
+        user = request.user  # assuming user is authenticated
+        
+        # Prepare email content
+        subject = 'Welcome!'
+        from_email = 'no-reply@example.com'
+        to_email = user.email
+        
+        html_content = render_to_string('email/welcome_email.html', {'user': user})
+        # text_content = strip_tags(html_content)
+        # email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+        # email.attach_alternative(html_content, "text/html")
+        # email.send()
+        
+        # Start the email sending in a new thread
+        email_thread = threading.Thread(
+            target=send_email_async,
+            args=(subject, from_email, to_email, html_content)
+        )
+        email_thread.start()
+        
+        return Response({'detail': 'Welcome email sent.'}, status=status.HTTP_200_OK)
