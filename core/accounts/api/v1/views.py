@@ -17,6 +17,8 @@ from django.core.mail import EmailMultiAlternatives
 from django.utils.html import strip_tags
 from django.template.loader import render_to_string
 import threading
+from rest_framework_simplejwt.tokens import RefreshToken
+from ..utils import EmailThread
 
 
 #registration:
@@ -121,34 +123,28 @@ class ProfileAPIView(generics.RetrieveUpdateAPIView):
         obj = get_object_or_404(queryset,user=self.request.user)
         return obj
     
-# email send test:
-
-def send_email_async(subject, from_email, to_email, html_content): # function that run in the new thread
-    text_content = strip_tags(html_content)
-    email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
-    email.attach_alternative(html_content, "text/html")
-    email.send()
-    
+# email send test:   
 class TestEmailSend(GenericAPIView):
     def get(self, request, *args, **kwargs):
         user = request.user  # assuming user is authenticated
+        # added token for user in email:
+        token = self.get_token_for_user(user)
         
         # Prepare email content
         subject = 'Welcome!'
         from_email = 'no-reply@example.com'
         to_email = user.email
-        
-        html_content = render_to_string('email/welcome_email.html', {'user': user})
-        # text_content = strip_tags(html_content)
-        # email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
-        # email.attach_alternative(html_content, "text/html")
-        # email.send()
-        
-        # Start the email sending in a new thread
-        email_thread = threading.Thread(
-            target=send_email_async,
-            args=(subject, from_email, to_email, html_content)
-        )
-        email_thread.start()
+        html_content = render_to_string('email/welcome_email.html', {'token': token,'user':user})
+        text_content = strip_tags(html_content)
+        email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+        email.attach_alternative(html_content, "text/html")
+        #email.send()
+
+        EmailThread(email).start() # send email via Thread class
         
         return Response({'detail': 'Welcome email sent.'}, status=status.HTTP_200_OK)
+    
+    def get_token_for_user(self,user):
+        refresh = RefreshToken.for_user(user)
+        return str(refresh.access_token)
+        
