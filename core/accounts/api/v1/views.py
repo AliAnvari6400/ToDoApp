@@ -11,6 +11,7 @@ from ...models import Profile,User
 from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
+from mail_templated import EmailMessage
 
 #registration:
 class RegistrationApiView(generics.GenericAPIView):
@@ -113,3 +114,33 @@ class ProfileAPIView(generics.RetrieveUpdateAPIView):
         queryset = self.get_queryset()
         obj = get_object_or_404(queryset,user=self.request.user)
         return obj
+    
+# email send test:
+class TestEmailSend(GenericAPIView):
+    def get(self, request, *args, **kwargs):
+        #user_email = request.data.get('email')
+        user_email = 'test@yahoo.com'
+        # user_first_name = request.data.get('first_name', 'User')
+        user_first_name = 'ali'
+
+        if not user_email:
+            return Response({"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        context = {
+            'user': {
+                'first_name': user_first_name,
+            }
+        }
+
+        try:
+            email = EmailMessage(
+                template_name='emails/welcome_email',  # refers to welcome_email.subject.txt and welcome_email.body.html
+                context=context,
+                to=[user_email],
+            )
+            email.send()
+        except Exception as e:
+            return Response({"error": f"Failed to send email: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({"message": "Templated email sent successfully."}, status=status.HTTP_200_OK)
+
