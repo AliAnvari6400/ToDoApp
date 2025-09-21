@@ -30,7 +30,7 @@ urlpatterns = [
     # path('activation/confirm/',.as_view(), name='activation-confirm'),
     # path('activation/resend/',.as_view(), name='activation-resend'),
     
-    # email sending test:
+    # email send test:
     path('test-email/',TestEmailSend.as_view(), name='test-email'),
        
 ]

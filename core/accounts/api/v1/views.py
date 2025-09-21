@@ -21,16 +21,38 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from ..utils import EmailThread
 
 
-#registration:
+# Registration:
 class RegistrationApiView(generics.GenericAPIView):
     serializer_class = RegistrationSerializer
     
     def post(self,request,*args,**kwargs):
         serializer = RegistrationSerializer(data=request.data)
+        print(serializer)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        data = {'email':serializer.validated_data['email']}
+        user = serializer.save()  # get user obj from serializer
+    
+        # added token for user in email:
+        token = self.get_token_for_user(user)
+        
+        # Prepare email content
+        subject = 'Welcome!'
+        from_email = 'no-reply@example.com'
+        to_email = user.email
+        html_content = render_to_string('email/activation_email.html', {'token': token,'user':user})
+        text_content = strip_tags(html_content)
+        email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+        email.attach_alternative(html_content, "text/html")
+        #email.send()
+
+        EmailThread(email).start() # send email via Thread class
+        
+        data = {'email':serializer.validated_data['email'],'detail':'verification email sent'}
         return Response(data, status=status.HTTP_201_CREATED)
+    
+    def get_token_for_user(self,user):
+        refresh = RefreshToken.for_user(user)
+        return str(refresh.access_token)
+        
 
 # login by token:
 class CustomObtainAuthToken(ObtainAuthToken):
