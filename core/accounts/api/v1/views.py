@@ -19,7 +19,8 @@ from django.template.loader import render_to_string
 import threading
 from rest_framework_simplejwt.tokens import RefreshToken
 from ..utils import EmailThread
-
+import jwt
+from django.conf import settings
 
 # Registration:
 class RegistrationApiView(generics.GenericAPIView):
@@ -109,7 +110,8 @@ class ChangepasswordAPIView(GenericAPIView):
 
         return Response({'detail': 'Password updated successfully.'}, status=status.HTTP_200_OK)
 
-# profile (get/put/patch):
+# profile:
+
 # class ProfileAPIView(APIView):
 #     permission_classes = [IsAuthenticated]
 #     serializer_class = ProfileSerializer
@@ -170,3 +172,20 @@ class TestEmailSend(GenericAPIView):
         refresh = RefreshToken.for_user(user)
         return str(refresh.access_token)
         
+
+class ActivationApiView(APIView):
+    def get(self,request,token):
+        try:
+            token = jwt.decode(token,settings.SECRET_KEY,algorithms = ['HS256'])
+        except jwt.ExpiredSignatureError:
+            return Response({'error': 'Token has expired'}, status=401)
+        except jwt.InvalidTokenError:
+            return Response({'error': 'Invalid token'}, status=401)
+        
+        user_id = token.get('user_id')
+        user_obj = User.objects.get(pk = user_id)
+        if user_obj.is_verified:
+            return Response({'details':'user was verified'},status=status.HTTP_400_BAD_REQUEST)
+        user_obj.is_verified = True
+        user_obj.save()
+        return Response({'details':'your account verified'},status=status.HTTP_202_ACCEPTED)

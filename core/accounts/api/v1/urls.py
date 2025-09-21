@@ -1,5 +1,5 @@
 from django.urls import path,include
-from .views import RegistrationApiView,CustomTokenObtainPairView,CustomDiscardAuthtoken,ChangepasswordAPIView,ProfileAPIView,CustomObtainAuthToken,TestEmailSend
+from .views import RegistrationApiView,CustomTokenObtainPairView,CustomDiscardAuthtoken,ChangepasswordAPIView,ProfileAPIView,CustomObtainAuthToken,TestEmailSend,ActivationApiView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,TokenVerifyView)
@@ -27,8 +27,8 @@ urlpatterns = [
     path('profile/', ProfileAPIView.as_view(), name='profile'),
     
     # activation:
-    # path('activation/confirm/',.as_view(), name='activation-confirm'),
-    # path('activation/resend/',.as_view(), name='activation-resend'),
+    path('activation/confirm/<str:token>',ActivationApiView.as_view(), name='activation-confirm'),
+    # path('activation/resend/'.as_view(), name='activation-resend'),
     
     # email send test:
     path('test-email/',TestEmailSend.as_view(), name='test-email'),
