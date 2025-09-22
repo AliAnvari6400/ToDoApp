@@ -102,3 +102,20 @@ class ProfileSerializer(serializers.ModelSerializer):
         if not getattr(user, 'is_verified', False):
             raise serializers.ValidationError("User is not verified")
         return data
+
+# Activation Resend: 
+class ActivationResendSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    
+    def validate(self,attrs):
+        email = attrs.get('email')
+    
+        try:
+            user_obj = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError({'details':'user not exist'})
+        if user_obj.is_verified:
+            raise serializers.ValidationError({'details':'user already verified'})
+        attrs['user'] = user_obj
+        return super().validate(attrs) 
+        
