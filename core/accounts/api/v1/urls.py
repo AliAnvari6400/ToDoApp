@@ -1,5 +1,5 @@
 from django.urls import path,include
-from .views import RegistrationApiView,CustomTokenObtainPairView,CustomDiscardAuthtoken,ChangepasswordAPIView,ProfileAPIView,CustomObtainAuthToken,TestEmailSend,ActivationApiView,ActivationResendApiView
+from .views import RegistrationApiView,CustomTokenObtainPairView,CustomDiscardAuthtoken,ChangepasswordAPIView,ProfileAPIView,CustomObtainAuthToken,TestEmailSend,ActivationApiView,ActivationResendApiView,ResetPasswordRequestAPIView,ResetPasswordConfirmAPIView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,TokenVerifyView)
@@ -8,10 +8,10 @@ app_name = 'api-v1'
 
 urlpatterns = [
     
-    # registration:
+    # Registration:
     path('registration/', RegistrationApiView.as_view(), name='registration'),
     
-    # login & logout by token:
+    # Login & Logout by Token:
     path('token/login/',CustomObtainAuthToken.as_view(), name='token-login'),
     path('token/logout/',CustomDiscardAuthtoken.as_view(), name='token-logout'),
     
@@ -20,17 +20,21 @@ urlpatterns = [
     path('jwt/refresh/', TokenRefreshView.as_view(), name='jwt-refresh'),
     path('jwt/verify/', TokenVerifyView.as_view(), name='token_verify'),
     
-    # change password:
+    # Change Password:
     path('change-password/', ChangepasswordAPIView.as_view(), name='change-password'),
     
     # profile:
     path('profile/', ProfileAPIView.as_view(), name='profile'),
     
-    # activation:
+    # Activation:
     path('activation/confirm/<str:token>',ActivationApiView.as_view(), name='activation-confirm'),
     path('activation/resend/',ActivationResendApiView.as_view(), name='activation-resend'),
     
-    # email send test:
+    # Reset Password:
+    path('reset-password/request/', ResetPasswordRequestAPIView.as_view(), name='reset-password-request'),
+    path('reset-password/confirm/<int:uid>/<str:token>/', ResetPasswordConfirmAPIView.as_view(), name='reset-password-confirm'),
+    
+    # Email Send Test:
     path('test-email/',TestEmailSend.as_view(), name='test-email'),
        
 ]

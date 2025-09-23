@@ -4,6 +4,8 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import authenticate
+from django.utils.http import urlsafe_base64_decode
+from django.contrib.auth.tokens import default_token_generator
 
 # registration:
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -118,4 +120,26 @@ class ActivationResendSerializer(serializers.Serializer):
             raise serializers.ValidationError({'details':'user already verified'})
         attrs['user'] = user_obj
         return super().validate(attrs) 
+
+# Reset Password:
+class ResetPasswordRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    
+class ResetPasswordConfirmSerializer(serializers.Serializer):
+    uid = serializers.CharField()
+    token = serializers.CharField()
+    new_password = serializers.CharField(min_length=8)
+
+    def validate(self, attrs):
         
+        try:
+            uid = attrs['uid']
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            raise serializers.ValidationError('Invalid UID')
+
+        # if not default_token_generator.check_token(user, attrs['token']):
+        #     raise serializers.ValidationError('Invalid or expired token')
+
+        attrs['user'] = user
+        return attrs

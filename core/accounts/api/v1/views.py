@@ -1,10 +1,10 @@
 from rest_framework import generics,status
-from .serializers import RegistrationSerializer,ProfileSerializer,CustomObtainAuthTokenSerializer,ActivationResendSerializer
+from .serializers import RegistrationSerializer,ProfileSerializer,CustomObtainAuthTokenSerializer,ActivationResendSerializer,ResetPasswordRequestSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import CustomTokenObtainPairSerializer,ChangePasswordSerializer
+from .serializers import CustomTokenObtainPairSerializer,ChangePasswordSerializer,ResetPasswordConfirmSerializer
 from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from ...models import Profile,User
@@ -21,6 +21,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from ..utils import EmailThread
 import jwt
 from django.conf import settings
+from django.urls import reverse
 
 # Registration:
 class RegistrationApiView(generics.GenericAPIView):
@@ -217,7 +218,68 @@ class ActivationResendApiView(GenericAPIView):
         data = {'email':serializer.validated_data['email'],'detail':'verification email sent'}
         return Response(data, status=status.HTTP_201_CREATED)
     
+    def get_token_for_user(self,user):
+        refresh = RefreshToken.for_user(user)
+        return str(refresh.access_token)
+    
+
+# Reset Password (request & confirm):
+class ResetPasswordRequestAPIView(GenericAPIView):
+    serializer_class = ResetPasswordRequestSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data['email']
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"detail": "If the email exists, a reset link has been sent."}, status=status.HTTP_200_OK)
+        
+        uid = user.id 
+              
+        # Generate token
+        token = self.get_token_for_user(user)
+        
+        # reset url
+        reset_url = f"http://127.0.0.1:8000/accounts/api/v1/reset-password/confirm/{uid}/{token}/"
+        
+        # Prepare email content
+        subject = 'Welcome!'
+        from_email = 'no-reply@example.com'
+        to_email = user.email
+        html_content = render_to_string('email/reset_email.html', {'reset_url':reset_url})
+        text_content = strip_tags(html_content)
+        email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+        email.attach_alternative(html_content, "text/html")
+        #email.send()
+
+        EmailThread(email).start() # send email via Thread class
+        
+        data = {'email':serializer.validated_data['email'],'detail':'reset link sent'}
+        return Response(data, status=status.HTTP_200_OK)
     
     def get_token_for_user(self,user):
         refresh = RefreshToken.for_user(user)
         return str(refresh.access_token)
+
+class ResetPasswordConfirmAPIView(GenericAPIView):
+    serializer_class = ResetPasswordConfirmSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.validated_data['user']
+        user.set_password(serializer.validated_data['new_password'])
+        user.save()
+
+        return Response({"detail": "Password has been reset successfully."}, status=status.HTTP_200_OK)
+    
+    
+    
+
+
+
+    
