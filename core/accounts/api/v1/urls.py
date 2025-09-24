@@ -32,7 +32,7 @@ urlpatterns = [
     
     # Reset Password:
     path('reset-password/request/', ResetPasswordRequestAPIView.as_view(), name='reset-password-request'),
-    path('reset-password/confirm/<int:uid>/<str:token>/', ResetPasswordConfirmAPIView.as_view(), name='reset-password-confirm'),
+    path('reset-password/confirm/<str:token>/', ResetPasswordConfirmAPIView.as_view(), name='reset-password-confirm'),
     
     # Email Send Test:
     path('test-email/',TestEmailSend.as_view(), name='test-email'),

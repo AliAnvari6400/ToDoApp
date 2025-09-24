@@ -4,8 +4,9 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import authenticate
-from django.utils.http import urlsafe_base64_decode
-from django.contrib.auth.tokens import default_token_generator
+import jwt
+from django.conf import settings
+from rest_framework.response import Response
 
 # registration:
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -126,20 +127,37 @@ class ResetPasswordRequestSerializer(serializers.Serializer):
     email = serializers.EmailField()
     
 class ResetPasswordConfirmSerializer(serializers.Serializer):
-    uid = serializers.CharField()
-    token = serializers.CharField()
     new_password = serializers.CharField(min_length=8)
 
     def validate(self, attrs):
-        
+        kwargs = self.context.get('kwargs', {})
+        token = kwargs.get('token')
+
+        if not token:
+            raise serializers.ValidationError('Token is required.')
+
         try:
-            uid = attrs['uid']
-            user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            raise serializers.ValidationError('Invalid UID')
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise serializers.ValidationError('Token has expired.')
+        except jwt.InvalidTokenError:
+            raise serializers.ValidationError('Invalid token.')
 
-        # if not default_token_generator.check_token(user, attrs['token']):
-        #     raise serializers.ValidationError('Invalid or expired token')
+        user_id = payload.get('user_id')
+        if not user_id:
+            raise serializers.ValidationError('Invalid token payload.')
+        
+        # Check if user is verified
+        if not getattr(user_id, 'is_verified', False):
+                raise serializers.ValidationError("User is not verified")
+        try:
+            user_obj = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            raise serializers.ValidationError('User does not exist.')
 
-        attrs['user'] = user
+        attrs['user'] = user_obj
         return attrs
+    
+        
+    
+

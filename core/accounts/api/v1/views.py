@@ -21,7 +21,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from ..utils import EmailThread
 import jwt
 from django.conf import settings
-from django.urls import reverse
+
 
 # Registration:
 class RegistrationApiView(generics.GenericAPIView):
@@ -236,20 +236,18 @@ class ResetPasswordRequestAPIView(GenericAPIView):
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             return Response({"detail": "If the email exists, a reset link has been sent."}, status=status.HTTP_200_OK)
-        
-        uid = user.id 
-              
+                    
         # Generate token
         token = self.get_token_for_user(user)
         
         # reset url
-        reset_url = f"http://127.0.0.1:8000/accounts/api/v1/reset-password/confirm/{uid}/{token}/"
+        reset_url = f"http://127.0.0.1:8000/accounts/api/v1/reset-password/confirm/{token}/"
         
         # Prepare email content
         subject = 'Welcome!'
         from_email = 'no-reply@example.com'
         to_email = user.email
-        html_content = render_to_string('email/reset_email.html', {'reset_url':reset_url})
+        html_content = render_to_string('email/reset_email.html', {'reset_url':reset_url,'user':user})
         text_content = strip_tags(html_content)
         email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
         email.attach_alternative(html_content, "text/html")
@@ -263,22 +261,29 @@ class ResetPasswordRequestAPIView(GenericAPIView):
     def get_token_for_user(self,user):
         refresh = RefreshToken.for_user(user)
         return str(refresh.access_token)
-
+    
 class ResetPasswordConfirmAPIView(GenericAPIView):
     serializer_class = ResetPasswordConfirmSerializer
 
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+    def post(self, request, token):
+        # Pass token via context to serializer
+        serializer = self.get_serializer(
+            data=request.data,
+            context={'kwargs': {'token': token}}
+        )
+        
         serializer.is_valid(raise_exception=True)
 
         user = serializer.validated_data['user']
-        user.set_password(serializer.validated_data['new_password'])
-        user.save()
+        new_password = serializer.validated_data['new_password']
 
-        return Response({"detail": "Password has been reset successfully."}, status=status.HTTP_200_OK)
-    
-    
-    
+        user.set_password(new_password)
+        user.save()
+        print(new_password)
+
+        return Response({'detail': 'Password reset successful.'}, status=status.HTTP_200_OK)
+
+
 
 
 
