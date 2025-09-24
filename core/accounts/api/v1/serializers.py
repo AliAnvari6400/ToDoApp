@@ -142,13 +142,18 @@ class ResetPasswordConfirmSerializer(serializers.Serializer):
             raise serializers.ValidationError('Token has expired.')
         except jwt.InvalidTokenError:
             raise serializers.ValidationError('Invalid token.')
+        
+        try:
+            validate_password(attrs.get('new_password'))
+        except ValidationError as e:
+            raise serializers.ValidationError({'password':list(e.messages)})
 
         user_id = payload.get('user_id')
         if not user_id:
             raise serializers.ValidationError('Invalid token payload.')
         
-        # Check if user is verified
-        if not getattr(user_id, 'is_verified', False):
+        # Check if user is not verified
+        if getattr(user_id, 'is_verified', False):
                 raise serializers.ValidationError("User is not verified")
         try:
             user_obj = User.objects.get(pk=user_id)
