@@ -7,6 +7,8 @@ from django.contrib.auth import authenticate
 import jwt
 from django.conf import settings
 from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
+from django.contrib.auth import logout
 
 
 
@@ -128,7 +130,14 @@ class ActivationResendSerializer(serializers.Serializer):
 # Reset Password:
 class ResetPasswordRequestSerializer(serializers.Serializer):
     email = serializers.EmailField()
-      
+        
+    # def validate(self, attrs):
+    #     request = self.context.get('request')
+    #     if request.user.is_authenticated:
+    #         logout(request)
+    #         raise PermissionDenied("You are already logged in. This action is not allowed.")
+    #     return attrs
+
 class ResetPasswordConfirmSerializer(serializers.Serializer):
     new_password = serializers.CharField(min_length=8)
     new_password_confirm = serializers.CharField(min_length=8,required=True)

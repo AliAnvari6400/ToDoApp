@@ -21,7 +21,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from ..utils import EmailThread
 import jwt
 from django.conf import settings
-from django.contrib.auth import logout
+from .permissions import NoPostForLoggedInUsers
 
 
 # Registration:
@@ -227,18 +227,18 @@ class ActivationResendApiView(GenericAPIView):
 # Reset Password (request & confirm):
 class ResetPasswordRequestAPIView(GenericAPIView):
     serializer_class = ResetPasswordRequestSerializer
-
+    permission_classes = [NoPostForLoggedInUsers]
+        
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        # if request.user.is_authenticated:
+        #     return Response({"detail": "Logged-in users cannot send POST requests."},
+        #                     status=status.HTTP_403_FORBIDDEN)
+        
+        serializer = self.get_serializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         
-        #check user login:
-        if request.user.is_authenticated:
-            logout(request)
-            return Response({"detail": "Logged out successfully."}, status=status.HTTP_403_FORBIDDEN)
-        
-        
         email = serializer.validated_data['email']
+        
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
