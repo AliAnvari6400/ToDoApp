@@ -8,6 +8,9 @@ import jwt
 from django.conf import settings
 from rest_framework.response import Response
 
+
+
+
 # registration:
 class RegistrationSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(max_length=255,write_only=True)
@@ -125,9 +128,10 @@ class ActivationResendSerializer(serializers.Serializer):
 # Reset Password:
 class ResetPasswordRequestSerializer(serializers.Serializer):
     email = serializers.EmailField()
-    
+      
 class ResetPasswordConfirmSerializer(serializers.Serializer):
     new_password = serializers.CharField(min_length=8)
+    new_password_confirm = serializers.CharField(min_length=8,required=True)
 
     def validate(self, attrs):
         kwargs = self.context.get('kwargs', {})
@@ -147,6 +151,10 @@ class ResetPasswordConfirmSerializer(serializers.Serializer):
             validate_password(attrs.get('new_password'))
         except ValidationError as e:
             raise serializers.ValidationError({'password':list(e.messages)})
+        
+        # check password match:
+        if attrs.get('new_password') != attrs.get('new_password_confirm'):
+            raise serializers.ValidationError("New passwords do not match.")
 
         user_id = payload.get('user_id')
         if not user_id:
@@ -155,6 +163,7 @@ class ResetPasswordConfirmSerializer(serializers.Serializer):
         # Check if user is not verified
         if getattr(user_id, 'is_verified', False):
                 raise serializers.ValidationError("User is not verified")
+            
         try:
             user_obj = User.objects.get(pk=user_id)
         except User.DoesNotExist:

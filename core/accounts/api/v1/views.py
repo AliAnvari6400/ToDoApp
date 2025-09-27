@@ -21,6 +21,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from ..utils import EmailThread
 import jwt
 from django.conf import settings
+from django.contrib.auth import logout
 
 
 # Registration:
@@ -230,12 +231,19 @@ class ResetPasswordRequestAPIView(GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
+        
+        #check user login:
+        if request.user.is_authenticated:
+            logout(request)
+            return Response({"detail": "Logged out successfully."}, status=status.HTTP_403_FORBIDDEN)
+        
+        
         email = serializer.validated_data['email']
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             return Response({"detail": "If the email exists, a reset link has been sent."}, status=status.HTTP_200_OK)
+                             
                     
         # Generate token
         token = self.get_token_for_user(user)
