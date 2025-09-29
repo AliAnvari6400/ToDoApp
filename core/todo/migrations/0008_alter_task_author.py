@@ -7,14 +7,19 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0003_auto_20250813_2233'),
-        ('todo', '0007_alter_task_author'),
+        ("accounts", "0003_auto_20250813_2233"),
+        ("todo", "0007_alter_task_author"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='task',
-            name='author',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='accounts.profile'),
+            model_name="task",
+            name="author",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="accounts.profile",
+            ),
         ),
     ]

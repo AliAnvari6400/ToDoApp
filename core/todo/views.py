@@ -1,8 +1,8 @@
 from django.views.generic import ListView
-from django.views.generic.edit import CreateView,UpdateView,DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Task
 from accounts.models import Profile
-from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy
 from .forms import TaskForm
 from django.contrib.auth.models import Permission
@@ -10,50 +10,55 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 
+
 # customize LoginRequiredMixin for redirect to login page first
 class MyLoginRequiredMixin(LoginRequiredMixin):
     def get_login_url(self):
-        return reverse_lazy('accounts:login')
+        return reverse_lazy("accounts:login")
+
 
 # Combined CreateView and ListView
-class TaskView(MyLoginRequiredMixin,CreateView,ListView): 
+class TaskView(MyLoginRequiredMixin, CreateView, ListView):
     model = Task
-    template_name = 'todo/task.html'
-    success_url = '/todo/task/'
-    context_object_name = 'tasks'
+    template_name = "todo/task.html"
+    success_url = "/todo/task/"
+    context_object_name = "tasks"
     paginate_by = 50
-    form_class = TaskForm  
-    
+    form_class = TaskForm
+
     def get_queryset(self):
         queryset = super().get_queryset()
         current_user = self.request.user
         queryset = queryset.filter(author__user=current_user)
-        return queryset.order_by('-created_date')
-    
+        return queryset.order_by("-created_date")
+
     def get_initial(self):
         initial = super().get_initial()
         if self.request.user.is_authenticated:
-            initial['author'] = Profile.objects.get(user=self.request.user)
+            initial["author"] = Profile.objects.get(user=self.request.user)
         return initial
-    
+
     def form_valid(self, form):
         self.object = form.save()
         user = self.request.user
         content_type = ContentType.objects.get_for_model(Task)
-        view_permission = Permission.objects.get(codename='view_task', content_type=content_type)
+        view_permission = Permission.objects.get(
+            codename="view_task", content_type=content_type
+        )
         user.user_permissions.add(view_permission)
         return super().form_valid(form)
 
-class TaskEditView(MyLoginRequiredMixin,PermissionRequiredMixin,UpdateView):
+
+class TaskEditView(MyLoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Task
-    fields = ['title']
-    success_url = '/todo/task/'
-    permission_required = 'todo.view_task'
-    
+    fields = ["title"]
+    success_url = "/todo/task/"
+    permission_required = "todo.view_task"
+
     def get_queryset(self):
         queryset = super().get_queryset()
         return queryset.filter(author=Profile.objects.get(user=self.request.user))
-         
+
     def get_object(self, queryset=None):
         if queryset is None:
             queryset = self.get_queryset()
@@ -63,16 +68,17 @@ class TaskEditView(MyLoginRequiredMixin,PermissionRequiredMixin,UpdateView):
             # Instead of 404, raise 403 here
             raise PermissionDenied
         return obj
-     
-class TaskDeleteView(MyLoginRequiredMixin,PermissionRequiredMixin,DeleteView):
+
+
+class TaskDeleteView(MyLoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Task
-    success_url = '/todo/task/'
-    permission_required = 'todo.view_task'
-    
+    success_url = "/todo/task/"
+    permission_required = "todo.view_task"
+
     def get_queryset(self):
         queryset = super().get_queryset()
         return queryset.filter(author=Profile.objects.get(user=self.request.user))
-    
+
     def get_object(self, queryset=None):
         if queryset is None:
             queryset = self.get_queryset()
@@ -82,28 +88,28 @@ class TaskDeleteView(MyLoginRequiredMixin,PermissionRequiredMixin,DeleteView):
             # Instead of 404, raise 403 here
             raise PermissionDenied
         return obj
-     
-    
-class TaskCompleteView(MyLoginRequiredMixin,PermissionRequiredMixin,UpdateView):
+
+
+class TaskCompleteView(MyLoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Task
-    fields = ['status']
-    success_url = '/todo/task/'
-    template_name = 'todo/task_complete.html'
-    permission_required = 'todo.view_task'
-    
-    def form_valid(self,form):
-        instance = form.save(commit=False) 
+    fields = ["status"]
+    success_url = "/todo/task/"
+    template_name = "todo/task_complete.html"
+    permission_required = "todo.view_task"
+
+    def form_valid(self, form):
+        instance = form.save(commit=False)
         if instance.status == False:
-           instance.status = True
+            instance.status = True
         else:
-          instance.status = False  
+            instance.status = False
         instance.save()
-        return super(TaskCompleteView,self).form_valid(form)
-    
+        return super(TaskCompleteView, self).form_valid(form)
+
     def get_queryset(self):
         queryset = super().get_queryset()
         return queryset.filter(author=Profile.objects.get(user=self.request.user))
-    
+
     def get_object(self, queryset=None):
         if queryset is None:
             queryset = self.get_queryset()
@@ -113,4 +119,3 @@ class TaskCompleteView(MyLoginRequiredMixin,PermissionRequiredMixin,UpdateView):
             # Instead of 404, raise 403 here
             raise PermissionDenied
         return obj
-     
