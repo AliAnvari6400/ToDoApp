@@ -9,4 +9,6 @@ drf-yasg[validation]
 djangorestframework-simplejwt
 django-mail-templated
 
+# cleaning code:
 black
+flake8

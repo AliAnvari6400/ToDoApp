@@ -6,9 +6,6 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import authenticate
 import jwt
 from django.conf import settings
-from rest_framework.response import Response
-from rest_framework.exceptions import PermissionDenied
-from django.contrib.auth import logout
 
 
 # registration:
@@ -21,7 +18,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         if attrs.get("password") != attrs.get("password1"):
-            raise serializers.ValidationError({"details": "password does not match"})
+            raise serializers.ValidationError(
+                {"details": "password does not match"}
+            )
         try:
             validate_password(attrs.get("password"))
 
@@ -50,11 +49,14 @@ class CustomObtainAuthTokenSerializer(serializers.Serializer):
 
         if email and password:
             user = authenticate(
-                request=self.context.get("request"), email=email, password=password
+                request=self.context.get("request"),
+                email=email,
+                password=password,
             )
             if not user:
                 raise serializers.ValidationError(
-                    "Unable to log in with provided credentials.", code="authorization"
+                    "Unable to log in with provided credentials.",
+                    code="authorization",
                 )
 
             # Check if user is verified
@@ -63,7 +65,8 @@ class CustomObtainAuthTokenSerializer(serializers.Serializer):
 
         else:
             raise serializers.ValidationError(
-                "Must include 'username' and 'password'.", code="authorization"
+                "Must include 'username' and 'password'.",
+                code="authorization",
             )
 
         attrs["user"] = user
@@ -76,7 +79,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
         if not self.user.is_verified:  # check the verification of user
-            raise serializers.ValidationError({"details": "user is not verified"})
+            raise serializers.ValidationError(
+                {"details": "user is not verified"}
+            )
         data["email"] = self.user.email
         data["user_id"] = self.user.id
         return data
@@ -108,7 +113,14 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ["id", "email", "first_name", "last_name", "image", "description"]
+        fields = [
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "image",
+            "description",
+        ]
 
     def validate(self, data):  # check the verification of user
         user = self.context["request"].user
@@ -129,7 +141,9 @@ class ActivationResendSerializer(serializers.Serializer):
         except User.DoesNotExist:
             raise serializers.ValidationError({"details": "user not exist"})
         if user_obj.is_verified:
-            raise serializers.ValidationError({"details": "user already verified"})
+            raise serializers.ValidationError(
+                {"details": "user already verified"}
+            )
         attrs["user"] = user_obj
         return super().validate(attrs)
 
@@ -142,7 +156,7 @@ class ResetPasswordRequestSerializer(serializers.Serializer):
     #     request = self.context.get('request')
     #     if request.user.is_authenticated:
     #         logout(request)
-    #         raise PermissionDenied("You are already logged in. This action is not allowed.")
+    #         raise PermissionDenied("You are already logged in")
     #     return attrs
 
 
@@ -158,7 +172,9 @@ class ResetPasswordConfirmSerializer(serializers.Serializer):
             raise serializers.ValidationError("Token is required.")
 
         try:
-            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+            payload = jwt.decode(
+                token, settings.SECRET_KEY, algorithms=["HS256"]
+            )
         except jwt.ExpiredSignatureError:
             raise serializers.ValidationError("Token has expired.")
         except jwt.InvalidTokenError:

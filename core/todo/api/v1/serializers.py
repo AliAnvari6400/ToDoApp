@@ -5,8 +5,12 @@ from rest_framework import serializers
 
 class TaskSerializer(serializers.ModelSerializer):
     snippet = serializers.ReadOnlyField(source="get_snippet")
-    relative_url = serializers.URLField(source="get_absolute_api_url", read_only=True)
-    absolute_url = serializers.SerializerMethodField(method_name="get_absolute_url")
+    relative_url = serializers.URLField(
+        source="get_absolute_api_url", read_only=True
+    )
+    absolute_url = serializers.SerializerMethodField(
+        method_name="get_absolute_url"
+    )
 
     class Meta:
         model = Task

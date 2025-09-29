@@ -16,17 +16,13 @@ from .serializers import (
     ResetPasswordConfirmSerializer,
 )
 from rest_framework.generics import GenericAPIView
-from rest_framework.views import APIView
 from ...models import Profile, User
 from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
-from mail_templated import EmailMessage
-from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.utils.html import strip_tags
 from django.template.loader import render_to_string
-import threading
 from rest_framework_simplejwt.tokens import RefreshToken
 from ..utils import EmailThread
 import jwt
@@ -55,7 +51,9 @@ class RegistrationApiView(generics.GenericAPIView):
             "email/activation_email.html", {"token": token, "user": user}
         )
         text_content = strip_tags(html_content)
-        email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+        email = EmailMultiAlternatives(
+            subject, text_content, from_email, [to_email]
+        )
         email.attach_alternative(html_content, "text/html")
         # email.send()
 
@@ -120,7 +118,9 @@ class ChangepasswordAPIView(GenericAPIView):
         user = request.user
 
         # Check current password
-        if not user.check_password(serializer.validated_data["current_password"]):
+        if not user.check_password(
+            serializer.validated_data["current_password"]
+        ):
             return Response(
                 {"current_password": ["Wrong password."]},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -131,7 +131,8 @@ class ChangepasswordAPIView(GenericAPIView):
         user.save()
 
         return Response(
-            {"detail": "Password updated successfully."}, status=status.HTTP_200_OK
+            {"detail": "Password updated successfully."},
+            status=status.HTTP_200_OK,
         )
 
 
@@ -190,13 +191,17 @@ class TestEmailSend(GenericAPIView):
             "email/activation_email.html", {"token": token, "user": user}
         )
         text_content = strip_tags(html_content)
-        email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+        email = EmailMultiAlternatives(
+            subject, text_content, from_email, [to_email]
+        )
         email.attach_alternative(html_content, "text/html")
         # email.send()
 
         EmailThread(email).start()  # send email via Thread class
 
-        return Response({"detail": "Welcome email sent."}, status=status.HTTP_200_OK)
+        return Response(
+            {"detail": "Welcome email sent."}, status=status.HTTP_200_OK
+        )
 
     def get_token_for_user(self, user):
         refresh = RefreshToken.for_user(user)
@@ -207,7 +212,9 @@ class TestEmailSend(GenericAPIView):
 class ActivationApiView(APIView):
     def get(self, request, token):
         try:
-            token = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+            token = jwt.decode(
+                token, settings.SECRET_KEY, algorithms=["HS256"]
+            )
         except jwt.ExpiredSignatureError:
             return Response({"error": "Token has expired"}, status=401)
         except jwt.InvalidTokenError:
@@ -217,12 +224,14 @@ class ActivationApiView(APIView):
         user_obj = User.objects.get(pk=user_id)
         if user_obj.is_verified:
             return Response(
-                {"details": "user was verified"}, status=status.HTTP_400_BAD_REQUEST
+                {"details": "user was verified"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
         user_obj.is_verified = True
         user_obj.save()
         return Response(
-            {"details": "your account verified"}, status=status.HTTP_202_ACCEPTED
+            {"details": "your account verified"},
+            status=status.HTTP_202_ACCEPTED,
         )
 
 
@@ -246,7 +255,9 @@ class ActivationResendApiView(GenericAPIView):
             "email/activation_email.html", {"token": token, "user": user}
         )
         text_content = strip_tags(html_content)
-        email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+        email = EmailMultiAlternatives(
+            subject, text_content, from_email, [to_email]
+        )
         email.attach_alternative(html_content, "text/html")
         # email.send()
 
@@ -283,7 +294,9 @@ class ResetPasswordRequestAPIView(GenericAPIView):
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             return Response(
-                {"detail": "If the email exists, a reset link has been sent."},
+                {
+                    "detail": "If the email exists, a reset link has been sent."
+                },
                 status=status.HTTP_200_OK,
             )
 
@@ -303,7 +316,9 @@ class ResetPasswordRequestAPIView(GenericAPIView):
             "email/reset_email.html", {"reset_url": reset_url, "user": user}
         )
         text_content = strip_tags(html_content)
-        email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+        email = EmailMultiAlternatives(
+            subject, text_content, from_email, [to_email]
+        )
         email.attach_alternative(html_content, "text/html")
         # email.send()
 
@@ -339,5 +354,6 @@ class ResetPasswordConfirmAPIView(GenericAPIView):
         print(new_password)
 
         return Response(
-            {"detail": "Password reset successful."}, status=status.HTTP_200_OK
+            {"detail": "Password reset successful."},
+            status=status.HTTP_200_OK,
         )

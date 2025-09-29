@@ -28,7 +28,9 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG")
 
 ALLOWED_HOSTS = config(
-    "ALLOWED_HOSTS", cast=lambda v: [s.strip() for s in v.split(",")], default="*"
+    "ALLOWED_HOSTS",
+    cast=lambda v: [s.strip() for s in v.split(",")],
+    default="*",
 )
 
 
@@ -158,8 +160,12 @@ REST_FRAMEWORK = {
 # simple JWT settings:
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=20),  # How long access tokens are valid
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),  # How long refresh tokens are valid
+    "ACCESS_TOKEN_LIFETIME": timedelta(
+        minutes=20
+    ),  # How long access tokens are valid
+    "REFRESH_TOKEN_LIFETIME": timedelta(
+        days=1
+    ),  # How long refresh tokens are valid
     "ROTATE_REFRESH_TOKENS": False,  # Issue new refresh token on refresh
     "BLACKLIST_AFTER_ROTATION": True,  # Blacklist used refresh tokens if rotation enabled
     "ALGORITHM": "HS256",  # Signing algorithm

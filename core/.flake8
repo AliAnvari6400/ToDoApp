@@ -1,0 +1,24 @@
+[flake8]
+
+max-line-length = 88
+
+; ignore =
+    ; E203,  # whitespace before ':', compatible with Black
+    ; W503,  # line break before binary operator, compatible with Black
+    ; F403,  # from module import * used (common in Django's __init__.py)
+    ; F405,  # name may be undefined, but defined in Django imports like models
+
+exclude =
+    .git,
+    __pycache__,
+    migrations,
+    settings.py,
+    manage.py,
+    env,
+    venv,
+    node_modules,
+    static,
+    media,
+    settings.py
+
+; max-complexity = 10  # Optional: warn if code complexity exceeds this

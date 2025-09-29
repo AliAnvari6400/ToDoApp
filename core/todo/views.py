@@ -2,7 +2,10 @@ from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Task
 from accounts.models import Profile
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+)
 from django.urls import reverse_lazy
 from .forms import TaskForm
 from django.contrib.auth.models import Permission
@@ -57,7 +60,9 @@ class TaskEditView(MyLoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.filter(author=Profile.objects.get(user=self.request.user))
+        return queryset.filter(
+            author=Profile.objects.get(user=self.request.user)
+        )
 
     def get_object(self, queryset=None):
         if queryset is None:
@@ -70,14 +75,18 @@ class TaskEditView(MyLoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         return obj
 
 
-class TaskDeleteView(MyLoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+class TaskDeleteView(
+    MyLoginRequiredMixin, PermissionRequiredMixin, DeleteView
+):
     model = Task
     success_url = "/todo/task/"
     permission_required = "todo.view_task"
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.filter(author=Profile.objects.get(user=self.request.user))
+        return queryset.filter(
+            author=Profile.objects.get(user=self.request.user)
+        )
 
     def get_object(self, queryset=None):
         if queryset is None:
@@ -90,7 +99,9 @@ class TaskDeleteView(MyLoginRequiredMixin, PermissionRequiredMixin, DeleteView):
         return obj
 
 
-class TaskCompleteView(MyLoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class TaskCompleteView(
+    MyLoginRequiredMixin, PermissionRequiredMixin, UpdateView
+):
     model = Task
     fields = ["status"]
     success_url = "/todo/task/"
@@ -99,7 +110,7 @@ class TaskCompleteView(MyLoginRequiredMixin, PermissionRequiredMixin, UpdateView
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        if instance.status == False:
+        if instance.status is False:
             instance.status = True
         else:
             instance.status = False
@@ -108,7 +119,9 @@ class TaskCompleteView(MyLoginRequiredMixin, PermissionRequiredMixin, UpdateView
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.filter(author=Profile.objects.get(user=self.request.user))
+        return queryset.filter(
+            author=Profile.objects.get(user=self.request.user)
+        )
 
     def get_object(self, queryset=None):
         if queryset is None:
