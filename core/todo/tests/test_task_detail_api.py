@@ -25,7 +25,8 @@ def common_user2():
 @pytest.mark.django_db  
 class TestTaskDetailApi:
     
-    def test_get_task_response_401(self,api_client,common_user1): # GET unauthorized
+    # GET/PUT/PATCH/DELETE task with no login user: 
+    def test_task_unauthorized_response_401(self,api_client,common_user1):
         api_client.force_login(user = common_user1)
         profile = Profile.objects.get(user=common_user1)
         task = Task.objects.create(
@@ -33,24 +34,79 @@ class TestTaskDetailApi:
             title = 'test',
             status = True,
         )
-        api_client.logout()
+        api_client.logout()  # logout user for test unauthorized
         url = reverse('todo:api-v1:task-detail',kwargs={'pk':task.id})
-        response = api_client.get(url)
-        assert response.status_code == 401
-           
-    def test_get_task_create_by_user_response_200(self,api_client,common_user1): # GET task created by login user
-        api_client.force_login(user = common_user1)
-        profile = Profile.objects.get(user=common_user1)
-        task = Task.objects.create(
-            author = profile,
-            title = 'test',
-            status = True,
-        )
-        url = reverse('todo:api-v1:task-detail',kwargs={'pk':task.id})
-        response = api_client.get(url)
-        assert response.status_code == 200
         
-    def test_get_task_not_create_by_user_response_404(self,api_client,common_user1,common_user2): # GET task not created by login user
+        # GET:
+        response_get = api_client.get(url)
+        assert response_get.status_code == 401
+        
+        # PUT
+        data_put = {
+            'title':'test2',
+            'status': False,
+        }
+        response_put = api_client.put(url,data_put)       
+        assert response_put.status_code == 401
+        
+        # PATCH:
+        data_patch = {
+            'title':'test2',
+        }
+        response_patch = api_client.patch(url,data_patch)       
+        assert response_patch.status_code == 401
+        
+        # DELETE:
+        response_delete = api_client.delete(url)       
+        assert response_delete.status_code == 401
+    
+    
+    
+    # GET/PUT/PATCH/DELETE task created by login user:      
+    def test_task_create_by_user(self,api_client,common_user1):
+        api_client.force_login(user = common_user1)
+        profile = Profile.objects.get(user=common_user1)
+        task = Task.objects.create(
+            author = profile,
+            title = 'test',
+            status = True,
+        )
+        url = reverse('todo:api-v1:task-detail',kwargs={'pk':task.id})
+        
+        # GET:
+        response_get = api_client.get(url)
+        assert response_get.status_code == 200
+        
+        # PUT:
+        data_put = {
+            'title':'test2',
+            'status': False,
+        }
+        response_put = api_client.put(url,data_put)       
+        assert response_put.status_code == 200
+        
+        # PATCH invalid data:
+        data_patch_invalid = {
+            'title':'test2',
+        }
+        response_patch = api_client.patch(url,data_patch_invalid)       
+        assert response_patch.status_code == 400
+        
+        # PATCH valid data:
+        data_patch_valid = {
+            'status':False,
+        }
+        response_patch = api_client.patch(url,data_patch_valid)       
+        assert response_patch.status_code == 200
+        
+        # DELETE:
+        response_delete = api_client.delete(url)       
+        assert response_delete.status_code == 204
+        
+      
+      
+    # GET/PUT/PATCH/DELETE task not created by login user:   
+    def test_task_not_create_by_user(self,api_client,common_user1,common_user2): 
         api_client.force_login(user = common_user2)
         profile = Profile.objects.get(user=common_user1)
         task = Task.objects.create(
@@ -59,39 +115,29 @@ class TestTaskDetailApi:
             status = True,
         )
         url = reverse('todo:api-v1:task-detail',kwargs={'pk':task.id})
-        response = api_client.get(url)
-        assert response.status_code == 404   
-    
-    
+        
+        # GET:
+        response_get = api_client.get(url)       
+        assert response_get.status_code == 404 
+        
+        # PUT
+        data_put = {
+            'title':'test2',
+            'status': False,
+        }
+        response_put = api_client.put(url,data_put)       
+        assert response_put.status_code == 404 
+        
+        # PATCH:
+        data_patch = {
+            'title':'test2',
+        }
+        response_patch = api_client.patch(url,data_patch)       
+        assert response_patch.status_code == 404
+        
+        # DELETE:
+        response_delete = api_client.delete(url)       
+        assert response_delete.status_code == 404
         
         
-    # def test_get_task_response_404(self,api_client,common_user,url): # GET with not exist object
-    #     api_client.force_login(user = common_user)
-    #     response = api_client.get(url)
-    #     assert response.status_code == 404
-        
-    # def test_post_task_response_401(self,api_client,url):  # POST unauthorized
-    #     data = {
-    #         'title': 'test',
-    #         'status': True,
-    #     }
-    #     response = api_client.post(url,data)
-    #     assert response.status_code == 401
     
-    # def test_post_task_response_201(self,api_client,common_user,url):  # POST with login user
-    #     api_client.force_login(user = common_user)
-    #     data = {
-    #         'title': 'test',
-    #         'status': True,
-    #     }
-    #     response = api_client.post(url,data)
-    #     assert response.status_code == 201
-    
-    # def test_post_task_response_400(self,api_client,common_user,url):  # POST with incomplete data
-    #     api_client.force_login(user = common_user)
-    #     data = {
-    #         'title':'' ,
-    #         'status': 'test',
-    #     }
-    #     response = api_client.post(url,data)
-    #     assert response.status_code == 400
