@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 # Create Task model:
 class Task (models.Model):
@@ -9,4 +10,10 @@ class Task (models.Model):
     updated_date = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.title
+    
+    def get_snippet(self):
+        return self.title[0:2]
+    
+    def get_absolute_api_url(self):
+        return reverse("todo:api-v1:task-detail", kwargs={"pk": self.pk})
     
