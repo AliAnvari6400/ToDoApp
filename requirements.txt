@@ -4,3 +4,11 @@ pillow
 djangorestframework
 markdown
 django-filter
+drf-yasg[validation]
+# rest_framework.authtoken
+djangorestframework-simplejwt
+django-mail-templated
+
+# cleaning code:
+black
+flake8
