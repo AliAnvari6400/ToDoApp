@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY = config("SECRET_KEY",default ='test')
+SECRET_KEY = config("SECRET_KEY", default="test")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config("DEBUG",cast =bool,default= True)
+DEBUG = config("DEBUG", cast=bool, default=True)
 
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
@@ -160,12 +160,8 @@ REST_FRAMEWORK = {
 # simple JWT settings:
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(
-        minutes=20
-    ),  # How long access tokens are valid
-    "REFRESH_TOKEN_LIFETIME": timedelta(
-        days=1
-    ),  # How long refresh tokens are valid
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=20),  # How long access tokens are valid
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),  # How long refresh tokens are valid
     "ROTATE_REFRESH_TOKENS": False,  # Issue new refresh token on refresh
     "BLACKLIST_AFTER_ROTATION": True,  # Blacklist used refresh tokens if rotation enabled
     "ALGORITHM": "HS256",  # Signing algorithm

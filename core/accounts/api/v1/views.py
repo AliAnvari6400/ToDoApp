@@ -51,9 +51,7 @@ class RegistrationApiView(generics.GenericAPIView):
             "email/activation_email.html", {"token": token, "user": user}
         )
         text_content = strip_tags(html_content)
-        email = EmailMultiAlternatives(
-            subject, text_content, from_email, [to_email]
-        )
+        email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
         email.attach_alternative(html_content, "text/html")
         # email.send()
 
@@ -118,9 +116,7 @@ class ChangepasswordAPIView(GenericAPIView):
         user = request.user
 
         # Check current password
-        if not user.check_password(
-            serializer.validated_data["current_password"]
-        ):
+        if not user.check_password(serializer.validated_data["current_password"]):
             return Response(
                 {"current_password": ["Wrong password."]},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -191,17 +187,13 @@ class TestEmailSend(GenericAPIView):
             "email/activation_email.html", {"token": token, "user": user}
         )
         text_content = strip_tags(html_content)
-        email = EmailMultiAlternatives(
-            subject, text_content, from_email, [to_email]
-        )
+        email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
         email.attach_alternative(html_content, "text/html")
         # email.send()
 
         EmailThread(email).start()  # send email via Thread class
 
-        return Response(
-            {"detail": "Welcome email sent."}, status=status.HTTP_200_OK
-        )
+        return Response({"detail": "Welcome email sent."}, status=status.HTTP_200_OK)
 
     def get_token_for_user(self, user):
         refresh = RefreshToken.for_user(user)
@@ -212,9 +204,7 @@ class TestEmailSend(GenericAPIView):
 class ActivationApiView(APIView):
     def get(self, request, token):
         try:
-            token = jwt.decode(
-                token, settings.SECRET_KEY, algorithms=["HS256"]
-            )
+            token = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
         except jwt.ExpiredSignatureError:
             return Response({"error": "Token has expired"}, status=401)
         except jwt.InvalidTokenError:
@@ -255,9 +245,7 @@ class ActivationResendApiView(GenericAPIView):
             "email/activation_email.html", {"token": token, "user": user}
         )
         text_content = strip_tags(html_content)
-        email = EmailMultiAlternatives(
-            subject, text_content, from_email, [to_email]
-        )
+        email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
         email.attach_alternative(html_content, "text/html")
         # email.send()
 
@@ -294,9 +282,7 @@ class ResetPasswordRequestAPIView(GenericAPIView):
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             return Response(
-                {
-                    "detail": "If the email exists, a reset link has been sent."
-                },
+                {"detail": "If the email exists, a reset link has been sent."},
                 status=status.HTTP_200_OK,
             )
 
@@ -316,9 +302,7 @@ class ResetPasswordRequestAPIView(GenericAPIView):
             "email/reset_email.html", {"reset_url": reset_url, "user": user}
         )
         text_content = strip_tags(html_content)
-        email = EmailMultiAlternatives(
-            subject, text_content, from_email, [to_email]
-        )
+        email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
         email.attach_alternative(html_content, "text/html")
         # email.send()
 

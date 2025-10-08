@@ -18,9 +18,7 @@ class CustomUserCreationForm(UserCreationForm):
 class SignUpView(CreateView):
     form_class = CustomUserCreationForm
     template_name = "registration/signup.html"
-    success_url = reverse_lazy(
-        "accounts:login"
-    )  # Redirect to login page after signup
+    success_url = reverse_lazy("accounts:login")  # Redirect to login page after signup
 
 
 class MyLoginView(LoginView):

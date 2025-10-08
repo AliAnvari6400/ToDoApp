@@ -60,9 +60,7 @@ class TaskEditView(MyLoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.filter(
-            author=Profile.objects.get(user=self.request.user)
-        )
+        return queryset.filter(author=Profile.objects.get(user=self.request.user))
 
     def get_object(self, queryset=None):
         if queryset is None:
@@ -75,18 +73,14 @@ class TaskEditView(MyLoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         return obj
 
 
-class TaskDeleteView(
-    MyLoginRequiredMixin, PermissionRequiredMixin, DeleteView
-):
+class TaskDeleteView(MyLoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Task
     success_url = "/todo/task/"
     permission_required = "todo.view_task"
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.filter(
-            author=Profile.objects.get(user=self.request.user)
-        )
+        return queryset.filter(author=Profile.objects.get(user=self.request.user))
 
     def get_object(self, queryset=None):
         if queryset is None:
@@ -99,9 +93,7 @@ class TaskDeleteView(
         return obj
 
 
-class TaskCompleteView(
-    MyLoginRequiredMixin, PermissionRequiredMixin, UpdateView
-):
+class TaskCompleteView(MyLoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Task
     fields = ["status"]
     success_url = "/todo/task/"
@@ -119,9 +111,7 @@ class TaskCompleteView(
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.filter(
-            author=Profile.objects.get(user=self.request.user)
-        )
+        return queryset.filter(author=Profile.objects.get(user=self.request.user))
 
     def get_object(self, queryset=None):
         if queryset is None:
