@@ -17,3 +17,6 @@ flake8
 # tests:
 pytest
 pytest-django
+
+# generate fake data:
+Faker
