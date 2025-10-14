@@ -20,3 +20,6 @@ pytest-django
 
 # generate fake data:
 Faker
+
+# api access:
+django-cors-headers

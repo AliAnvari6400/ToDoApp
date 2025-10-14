@@ -50,9 +50,11 @@ INSTALLED_APPS = [
     "django_filters",
     "drf_yasg",
     "mail_templated",
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -185,3 +187,6 @@ EMAIL_PORT = 25
 EMAIL_USE_TLS = False
 EMAIL_HOST_USER = ""
 EMAIL_HOST_PASSWORD = ""
+
+# api access:
+CORS_ALLOW_ALL_ORIGINS = True
