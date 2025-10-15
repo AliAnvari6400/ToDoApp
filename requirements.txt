@@ -23,3 +23,8 @@ Faker
 
 # api access:
 django-cors-headers
+
+# background process:
+redis
+celery
+django-celery-beat

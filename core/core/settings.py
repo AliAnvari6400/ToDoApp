@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "drf_yasg",
     "mail_templated",
     "corsheaders",
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -190,3 +191,8 @@ EMAIL_HOST_PASSWORD = ""
 
 # api access:
 CORS_ALLOW_ALL_ORIGINS = True
+
+# Celery:
+CELERY_BROKER_URL = 'redis://redis:6379/1'  # Redis URL as broker
+
+
