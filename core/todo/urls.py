@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import TaskEditView, TaskDeleteView, TaskCompleteView, TaskView
+from .views import TaskEditView, TaskDeleteView, TaskCompleteView, TaskView,test
 
 app_name = "todo"
 
@@ -13,4 +13,7 @@ urlpatterns = [
         name="task-complete",
     ),
     path("api/v1/", include("todo.api.v1.urls")),
+    
+    # Test Celery:
+    path("test/", test, name="test"),
 ]
