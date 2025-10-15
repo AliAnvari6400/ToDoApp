@@ -127,11 +127,12 @@ class TaskCompleteView(MyLoginRequiredMixin, PermissionRequiredMixin, UpdateView
 
 
 # Test Celery task:
+# ---------------------------------
 from todo.tasks import add
 from django.http import HttpResponse
-
 
 def test(request):
     result = add.delay(3,3)
     print(result.id)
     return HttpResponse("done")
+# ---------------------------------

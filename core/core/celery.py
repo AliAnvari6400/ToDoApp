@@ -15,8 +15,8 @@ app.autodiscover_tasks()
 
 
 
-#from celery.schedules import crontab
-
+# For Test Beat:
+# ---------------------------------
 app.conf.beat_schedule = {
     'run-every-minute': {
         'task': 'todo.tasks.test',  # path to task
@@ -24,6 +24,6 @@ app.conf.beat_schedule = {
         # Or use 'schedule': 60.0 for seconds (every 60 seconds)
     },
 }
-
 app.conf.timezone = 'UTC'
+# ---------------------------------
 
