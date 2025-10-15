@@ -13,6 +13,17 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 # Automatically discover tasks.py modules in Django apps
 app.autodiscover_tasks()
 
-# @app.task(bind=True)
-# def debug_task(self):
-#     print(f'Request: {self.request!r}')
+
+
+#from celery.schedules import crontab
+
+app.conf.beat_schedule = {
+    'run-every-minute': {
+        'task': 'todo.tasks.test',  # path to task
+        'schedule': 5
+        # Or use 'schedule': 60.0 for seconds (every 60 seconds)
+    },
+}
+
+app.conf.timezone = 'UTC'
+

@@ -5,3 +5,9 @@ import time
 def add(x, y):
     time.sleep(10)
     return x + y
+
+@shared_task
+def test():
+    print('ok')
+
+
