@@ -9,6 +9,8 @@ from rest_framework.views import APIView
 import requests
 from rest_framework.response import Response
 from rest_framework import status
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 
 class TaskModelViewSet(viewsets.ModelViewSet):
@@ -33,21 +35,20 @@ class TaskModelViewSet(viewsets.ModelViewSet):
 
 
 # Weather API:
-
-#@cache_page(30)
 class WeatherAPIView(APIView):
     #permission_classes = [IsAuthenticated]
     serializer_class = WeatherSerializer
-
+    
+    @method_decorator(cache_page(30))
     def get(self, request):  
-        API_KEY = '6075f690e844e83ffc96d4ddf40c8b18'  # Replace with your OpenWeather API key
+        API_KEY = '6075f690e844e83ffc96d4ddf40c8b18'
         city = 'Tehran'
         url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=metric"
         response = requests.get(url)
     
         if response.status_code == 200:
             data = response.json()
-            serializer = WeatherSerializer(data)  # Pass instance, NOT data=...
+            serializer = WeatherSerializer(data)
             return Response(serializer.data)
         else:
             return Response({"error": "Failed to fetch weather data"}, status=response.status_code)

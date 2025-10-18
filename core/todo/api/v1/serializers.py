@@ -1,6 +1,7 @@
 from ...models import Task
 from accounts.models import Profile
 from rest_framework import serializers
+from datetime import datetime, timezone, timedelta
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -59,10 +60,8 @@ class TaskSerializer(serializers.ModelSerializer):
         return attrs
 
 
+
 # Weather:
-
-from datetime import datetime, timezone, timedelta
-
 class WeatherSerializer(serializers.Serializer):
     city = serializers.CharField(source='name')
     country = serializers.CharField(source='sys.country')
