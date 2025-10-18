@@ -136,3 +136,30 @@ def test(request):
     print(result.id)
     return HttpResponse("done")
 # ---------------------------------
+
+
+# Test Redis for cache:
+# ---------------------------------
+import requests
+from django.http import JsonResponse
+from django.core.cache import cache
+from django.views.decorators.cache import cache_page
+
+# def weather(request):   
+#     API_KEY = '6075f690e844e83ffc96d4ddf40c8b18'  # Replace with your OpenWeather API key
+#     city = 'Tehran'
+#     url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=metric"
+#     if cache.get('test') is None:
+#         response = requests.get(url)
+#         cache.set('test',response.json(),30)
+#     return JsonResponse(cache.get('test'))
+
+@cache_page(30)
+def weather(request):   
+    API_KEY = '6075f690e844e83ffc96d4ddf40c8b18'  # Replace with your OpenWeather API key
+    city = 'Tehran'
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=metric"
+    response = requests.get(url)
+    return JsonResponse(response.json())
+# ---------------------------------
+

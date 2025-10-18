@@ -28,3 +28,9 @@ django-cors-headers
 redis
 celery
 django-celery-beat
+
+# request:
+requests
+
+# cache:
+django-redis

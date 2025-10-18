@@ -1,10 +1,14 @@
-from .serializers import TaskSerializer
+from .serializers import TaskSerializer,WeatherSerializer
 from ...models import Task
 from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsOwnerOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from .paginations import DefaultPagination
+from rest_framework.views import APIView
+import requests
+from rest_framework.response import Response
+from rest_framework import status
 
 
 class TaskModelViewSet(viewsets.ModelViewSet):
@@ -25,3 +29,27 @@ class TaskModelViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):  # list items for only owner
         return Task.objects.filter(author__user=self.request.user)
+
+
+
+# Weather API:
+
+#@cache_page(30)
+class WeatherAPIView(APIView):
+    #permission_classes = [IsAuthenticated]
+    serializer_class = WeatherSerializer
+
+    def get(self, request):  
+        API_KEY = '6075f690e844e83ffc96d4ddf40c8b18'  # Replace with your OpenWeather API key
+        city = 'Tehran'
+        url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=metric"
+        response = requests.get(url)
+    
+        if response.status_code == 200:
+            data = response.json()
+            serializer = WeatherSerializer(data)  # Pass instance, NOT data=...
+            return Response(serializer.data)
+        else:
+            return Response({"error": "Failed to fetch weather data"}, status=response.status_code)
+
+    
