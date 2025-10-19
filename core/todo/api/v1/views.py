@@ -39,7 +39,7 @@ class WeatherAPIView(APIView):
     #permission_classes = [IsAuthenticated]
     serializer_class = WeatherSerializer
     
-    @method_decorator(cache_page(30))
+    @method_decorator(cache_page(60*20))
     def get(self, request):  
         API_KEY = '6075f690e844e83ffc96d4ddf40c8b18'
         city = 'Tehran'

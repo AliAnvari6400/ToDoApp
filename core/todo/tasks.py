@@ -27,7 +27,7 @@ from django.core.cache import cache
     
 @shared_task
 def update_weather():
-    url = "http://127.0.0.1:8000/todo/api/v1/weather/"
+    url = "http://todoapp:8000/todo/api/v1/weather/"
     api_client = APIClient()
     api_client.get(url)
 
