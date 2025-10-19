@@ -163,3 +163,7 @@ def weather(request):
     return JsonResponse(response.json())
 # ---------------------------------
 
+
+from django.views.generic import TemplateView
+class WeatherView(TemplateView):
+    template_name = "todo/weather.html"

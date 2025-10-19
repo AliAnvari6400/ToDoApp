@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import TaskEditView, TaskDeleteView, TaskCompleteView, TaskView,test,weather
+from .views import TaskEditView, TaskDeleteView, TaskCompleteView, TaskView,test,weather,WeatherView
 
 app_name = "todo"
 
@@ -17,6 +17,7 @@ urlpatterns = [
     # Test Celery:
     path("test/", test, name="test"),
     
-    # Test Redis:
+    # Test Redis for cache:
     path("weather/", weather, name="weather"),
+    path("weather_show/", WeatherView.as_view(), name="weather_show"),
 ]
