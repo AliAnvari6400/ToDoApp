@@ -19,5 +19,7 @@ urlpatterns = [
     
     # Test Redis for cache:
     path("weather/", weather, name="weather"),
+    
+    # Show graphical weather data:
     path("weather_show/", WeatherView.as_view(), name="weather_show"),
 ]
