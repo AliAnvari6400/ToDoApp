@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     "drf_yasg",
     "mail_templated",
     "corsheaders",
-    'django_celery_beat',
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -193,22 +193,17 @@ EMAIL_HOST_PASSWORD = ""
 CORS_ALLOW_ALL_ORIGINS = True
 
 # Celery:
-CELERY_BROKER_URL = 'redis://redis:6379/1'  # Redis URL as broker
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
+CELERY_BROKER_URL = "redis://redis:6379/1"  # Redis URL as broker
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers.DatabaseScheduler"
 
 # Cache with Redis:
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://redis:6379/2",  # your Redis server address
-        #"TIMEOUT":60,
+        # "TIMEOUT":60,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
+        },
     }
 }
-
-
-
-
-

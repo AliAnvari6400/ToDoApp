@@ -60,18 +60,17 @@ class TaskSerializer(serializers.ModelSerializer):
         return attrs
 
 
-
 # Weather:
 class WeatherSerializer(serializers.Serializer):
-    city = serializers.CharField(source='name')
-    country = serializers.CharField(source='sys.country')
+    city = serializers.CharField(source="name")
+    country = serializers.CharField(source="sys.country")
     coordinates = serializers.SerializerMethodField()
     weather = serializers.SerializerMethodField()
     temperature = serializers.SerializerMethodField()
-    pressure = serializers.IntegerField(source='main.pressure')
-    humidity = serializers.IntegerField(source='main.humidity')
+    pressure = serializers.IntegerField(source="main.pressure")
+    humidity = serializers.IntegerField(source="main.humidity")
     wind = serializers.SerializerMethodField()
-    clouds = serializers.IntegerField(source='clouds.all')
+    clouds = serializers.IntegerField(source="clouds.all")
     visibility = serializers.IntegerField()
     sunrise = serializers.SerializerMethodField()
     sunset = serializers.SerializerMethodField()
@@ -79,34 +78,34 @@ class WeatherSerializer(serializers.Serializer):
 
     def get_coordinates(self, obj):
         return {
-            'lon': obj.get('coord', {}).get('lon'),
-            'lat': obj.get('coord', {}).get('lat'),
+            "lon": obj.get("coord", {}).get("lon"),
+            "lat": obj.get("coord", {}).get("lat"),
         }
 
     def get_weather(self, obj):
-        weather_list = obj.get('weather', [])
+        weather_list = obj.get("weather", [])
         if weather_list and isinstance(weather_list, list):
             first = weather_list[0]
             return {
-                'main': first.get('main'),
-                'description': first.get('description'),
+                "main": first.get("main"),
+                "description": first.get("description"),
             }
         return {}
 
     def get_temperature(self, obj):
-        main = obj.get('main', {})
+        main = obj.get("main", {})
         return {
-            'current': main.get('temp'),
-            'feels_like': main.get('feels_like'),
-            'min': main.get('temp_min'),
-            'max': main.get('temp_max'),
+            "current": main.get("temp"),
+            "feels_like": main.get("feels_like"),
+            "min": main.get("temp_min"),
+            "max": main.get("temp_max"),
         }
 
     def get_wind(self, obj):
-        wind = obj.get('wind', {})
+        wind = obj.get("wind", {})
         return {
-            'speed': wind.get('speed'),
-            'degree': wind.get('deg'),
+            "speed": wind.get("speed"),
+            "degree": wind.get("deg"),
         }
 
     def _convert_unix_to_iso(self, unix_ts, tz_offset):
@@ -117,7 +116,11 @@ class WeatherSerializer(serializers.Serializer):
         return dt.isoformat()
 
     def get_sunrise(self, obj):
-        return self._convert_unix_to_iso(obj.get('sys', {}).get('sunrise'), obj.get('timezone'))
+        return self._convert_unix_to_iso(
+            obj.get("sys", {}).get("sunrise"), obj.get("timezone")
+        )
 
     def get_sunset(self, obj):
-        return self._convert_unix_to_iso(obj.get('sys', {}).get('sunset'), obj.get('timezone'))
+        return self._convert_unix_to_iso(
+            obj.get("sys", {}).get("sunset"), obj.get("timezone")
+        )
