@@ -34,3 +34,6 @@ requests
 
 # cache:
 django-redis
+
+# production:
+gunicorn
