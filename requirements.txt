@@ -37,4 +37,4 @@ django-redis
 
 # production:
 gunicorn
-psycopg2-binary
+psycopg2-binary  # postgres adaptor for django

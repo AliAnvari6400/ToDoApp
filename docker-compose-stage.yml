@@ -58,21 +58,37 @@ services:
   # Celery Worker:
   celery-worker:
     build: .
+    container_name: celery-worker
     command: celery -A core worker --loglevel=info
     volumes:
       - ./core:/app
+    environment:
+      - DEBUG=False
+      - DB_NAME=mydatabase
+      - DB_USER=myuser
+      - DB_PASSWORD=mypassword
+      - DB_HOST=db
+      - DB_PORT=5432
     depends_on:
-      - todoapp
+      - db
       - redis
   
   # Celery Beat:
   celery-beat:
     build: .
+    container_name: celery-beat
     command: celery -A core beat --loglevel=info
     volumes:
       - ./core:/app
+    environment:
+      - DEBUG=False
+      - DB_NAME=mydatabase
+      - DB_USER=myuser
+      - DB_PASSWORD=mypassword
+      - DB_HOST=db
+      - DB_PORT=5432
     depends_on:
-      - todoapp
+      - db
       - redis
 
   # nginx:
@@ -91,13 +107,13 @@ services:
       - todoapp
 
   db:
-    image: postgres
-    container_name: db
+    image: postgres:15
+    container_name: postgres_db
     environment:
-      - POSTGRES_DB=mydatabase
-      - POSTGRES_USER=myuser
-      - POSTGRES_PASSWORD=mypassword
-    ports:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    ports: 
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
