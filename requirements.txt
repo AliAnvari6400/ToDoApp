@@ -37,3 +37,4 @@ django-redis
 
 # production:
 gunicorn
+psycopg2-binary
