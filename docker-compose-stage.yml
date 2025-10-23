@@ -12,15 +12,19 @@ services:
              gunicorn core.wsgi:application --bind 0.0.0.0:8000" 
     volumes:
       - ./core:/app
-    ports:
-      - "8000:8000"
+      - static-volume:/app/static
+      - media-volume:/app/media
+    # ports:
+    #   - "8000:8000"
+    expose:    # for access from nginx container only
+      - "8000"
     restart: always
     environment:
       - SECRET_KEY=test
       - DEBUG=False
     depends_on: 
       - redis
-  
+
   # Locust:
   master:
     image: locustio/locust
@@ -65,5 +69,21 @@ services:
       - todoapp
       - redis
 
-# volumes:
-#   
+  # nginx:
+  nginx:
+    image: nginx
+    container_name: nginx
+    ports: 
+      - "80:80"
+    restart: always
+    volumes:
+      - ./core/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - static-volume:/app/static
+      - media-volume:/app/media
+    depends_on:
+      - redis
+      - todoapp
+
+volumes:
+  static-volume:
+  media-volume:
