@@ -1,4 +1,4 @@
-from django.views.generic import ListView
+from django.views.generic import ListView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Task
 from accounts.models import Profile
@@ -12,6 +12,13 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
+import requests
+from django.http import JsonResponse
+
+# from django.core.cache import cache
+from django.views.decorators.cache import cache_page
+from todo.tasks import add
+from django.http import HttpResponse
 
 
 # customize LoginRequiredMixin for redirect to login page first
@@ -122,3 +129,45 @@ class TaskCompleteView(MyLoginRequiredMixin, PermissionRequiredMixin, UpdateView
             # Instead of 404, raise 403 here
             raise PermissionDenied
         return obj
+
+
+# Test Celery task:
+# ---------------------------------
+def test(request):
+    result = add.delay(3, 3)
+    print(result.id)
+    return HttpResponse("done")
+
+
+# ---------------------------------
+
+
+# Test Redis for cache:
+# ---------------------------------
+# def weather(request):
+#     API_KEY = '6075f690e844e83ffc96d4ddf40c8b18'
+#     city = 'Tehran'
+#     url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=metric"
+#     if cache.get('test') is None:
+#         response = requests.get(url)
+#         cache.set('test',response.json(),30)
+#     return JsonResponse(cache.get('test'))
+
+
+@cache_page(30)
+def weather(request):
+    API_KEY = (
+        "6075f690e844e83ffc96d4ddf40c8b18"  # Replace with your OpenWeather API key
+    )
+    city = "Tehran"
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=metric"
+    response = requests.get(url)
+    return JsonResponse(response.json())
+
+
+# ---------------------------------
+
+
+# Weather Show:
+class WeatherView(TemplateView):
+    template_name = "todo/weather.html"

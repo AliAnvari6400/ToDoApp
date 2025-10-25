@@ -1,6 +1,7 @@
 from ...models import Task
 from accounts.models import Profile
 from rest_framework import serializers
+from datetime import datetime, timezone, timedelta
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -57,3 +58,69 @@ class TaskSerializer(serializers.ModelSerializer):
                     f"These fields cannot be updated: {', '.join(disallowed_fields)}"
                 )
         return attrs
+
+
+# Weather:
+class WeatherSerializer(serializers.Serializer):
+    city = serializers.CharField(source="name")
+    country = serializers.CharField(source="sys.country")
+    coordinates = serializers.SerializerMethodField()
+    weather = serializers.SerializerMethodField()
+    temperature = serializers.SerializerMethodField()
+    pressure = serializers.IntegerField(source="main.pressure")
+    humidity = serializers.IntegerField(source="main.humidity")
+    wind = serializers.SerializerMethodField()
+    clouds = serializers.IntegerField(source="clouds.all")
+    visibility = serializers.IntegerField()
+    sunrise = serializers.SerializerMethodField()
+    sunset = serializers.SerializerMethodField()
+    timezone = serializers.IntegerField()
+
+    def get_coordinates(self, obj):
+        return {
+            "lon": obj.get("coord", {}).get("lon"),
+            "lat": obj.get("coord", {}).get("lat"),
+        }
+
+    def get_weather(self, obj):
+        weather_list = obj.get("weather", [])
+        if weather_list and isinstance(weather_list, list):
+            first = weather_list[0]
+            return {
+                "main": first.get("main"),
+                "description": first.get("description"),
+            }
+        return {}
+
+    def get_temperature(self, obj):
+        main = obj.get("main", {})
+        return {
+            "current": main.get("temp"),
+            "feels_like": main.get("feels_like"),
+            "min": main.get("temp_min"),
+            "max": main.get("temp_max"),
+        }
+
+    def get_wind(self, obj):
+        wind = obj.get("wind", {})
+        return {
+            "speed": wind.get("speed"),
+            "degree": wind.get("deg"),
+        }
+
+    def _convert_unix_to_iso(self, unix_ts, tz_offset):
+        if unix_ts is None or tz_offset is None:
+            return None
+        tz = timezone(timedelta(seconds=tz_offset))
+        dt = datetime.fromtimestamp(unix_ts, tz)
+        return dt.isoformat()
+
+    def get_sunrise(self, obj):
+        return self._convert_unix_to_iso(
+            obj.get("sys", {}).get("sunrise"), obj.get("timezone")
+        )
+
+    def get_sunset(self, obj):
+        return self._convert_unix_to_iso(
+            obj.get("sys", {}).get("sunset"), obj.get("timezone")
+        )

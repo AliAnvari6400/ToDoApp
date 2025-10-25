@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Live Weather Data Visualization</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      max-width: 700px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    #weatherInfo {
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    #chartContainer {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+      font-size: 1.1rem;
+    }
+    .info-grid div {
+      background: #f0f0f0;
+      padding: 10px;
+      border-radius: 6px;
+    }
+    #error {
+      color: red;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Weather in <span id="cityName">-</span>, <span id="countryCode">-</span></h1>
+  <div id="weatherInfo" style="display:none;">
+    <p><strong>Weather:</strong> <span id="weatherMain"></span> - <span id="weatherDesc"></span></p>
+    <div class="info-grid">
+      <div>Temperature (°C): <span id="tempCurrent"></span></div>
+      <div>Feels Like (°C): <span id="tempFeelsLike"></span></div>
+      <div>Min Temp (°C): <span id="tempMin"></span></div>
+      <div>Max Temp (°C): <span id="tempMax"></span></div>
+      <div>Pressure (hPa): <span id="pressure"></span></div>
+      <div>Humidity (%): <span id="humidity"></span></div>
+      <div>Wind Speed (m/s): <span id="windSpeed"></span></div>
+      <div>Wind Direction (°): <span id="windDegree"></span></div>
+      <div>Cloudiness (%): <span id="clouds"></span></div>
+      <div>Visibility (m): <span id="visibility"></span></div>
+      <div>Sunrise: <span id="sunrise"></span></div>
+      <div>Sunset: <span id="sunset"></span></div>
+    </div>
+  </div>
+
+  <h2>Temperature Overview</h2>
+  <div id="chartContainer" style="display:none;">
+    <canvas id="tempChart"></canvas>
+  </div>
+
+  <div id="error"></div>
+
+  <script>
+    const apiUrl = 'http://127.0.0.1:8000/todo/api/v1/weather/';
+
+    function formatTime(isoString) {
+      const options = { hour: '2-digit', minute: '2-digit' };
+      const date = new Date(isoString);
+      return date.toLocaleTimeString([], options);
+    }
+
+    async function fetchWeatherData() {
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        const weatherData = await response.json();
+
+        // Populate fields
+        document.getElementById('cityName').textContent = weatherData.city;
+        document.getElementById('countryCode').textContent = weatherData.country;
+        document.getElementById('weatherMain').textContent = weatherData.weather.main;
+        document.getElementById('weatherDesc').textContent = weatherData.weather.description;
+        document.getElementById('tempCurrent').textContent = weatherData.temperature.current.toFixed(1);
+        document.getElementById('tempFeelsLike').textContent = weatherData.temperature.feels_like.toFixed(1);
+        document.getElementById('tempMin').textContent = weatherData.temperature.min.toFixed(1);
+        document.getElementById('tempMax').textContent = weatherData.temperature.max.toFixed(1);
+        document.getElementById('pressure').textContent = weatherData.pressure;
+        document.getElementById('humidity').textContent = weatherData.humidity;
+        document.getElementById('windSpeed').textContent = weatherData.wind.speed.toFixed(1);
+        document.getElementById('windDegree').textContent = weatherData.wind.degree;
+        document.getElementById('clouds').textContent = weatherData.clouds;
+        document.getElementById('visibility').textContent = weatherData.visibility;
+        document.getElementById('sunrise').textContent = formatTime(weatherData.sunrise);
+        document.getElementById('sunset').textContent = formatTime(weatherData.sunset);
+
+        // Show weather info container
+        document.getElementById('weatherInfo').style.display = 'block';
+        document.getElementById('chartContainer').style.display = 'block';
+
+        // Render Chart
+        const ctx = document.getElementById('tempChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Current', 'Feels Like', 'Min', 'Max'],
+            datasets: [{
+              label: 'Temperature (°C)',
+              data: [
+                weatherData.temperature.current,
+                weatherData.temperature.feels_like,
+                weatherData.temperature.min,
+                weatherData.temperature.max
+              ],
+              backgroundColor: [
+                'rgba(54, 162, 235, 0.7)',
+                'rgba(75, 192, 192, 0.7)',
+                'rgba(255, 206, 86, 0.7)',
+                'rgba(255, 99, 132, 0.7)'
+              ],
+              borderColor: [
+                'rgba(54, 162, 235, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(255, 99, 132, 1)'
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: { beginAtZero: true }
+            },
+            plugins: {
+              legend: { display: false }
+            }
+          }
+        });
+
+      } catch (error) {
+        document.getElementById('error').textContent = `Failed to load weather data: ${error.message}`;
+      }
+    }
+
+    fetchWeatherData();
+  </script>
+</body>
+</html>

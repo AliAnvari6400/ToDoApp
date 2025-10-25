@@ -23,3 +23,18 @@ Faker
 
 # api access:
 django-cors-headers
+
+# background process:
+redis
+celery
+django-celery-beat
+
+# request:
+requests
+
+# cache:
+django-redis
+
+# production:
+gunicorn
+psycopg2-binary  # postgres adaptor for django
