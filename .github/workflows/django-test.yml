@@ -27,7 +27,7 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Setup Docker Compose
-        run: docker compose up -d --build
+        run: docker compose -f docker-compose-stage.yml up -d --build
 
       # Runs a set of commands using the runners shell
       - name: Run Tests
