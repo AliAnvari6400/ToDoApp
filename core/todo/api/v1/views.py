@@ -54,7 +54,7 @@ class WeatherAPIView(APIView):
     #         serializer = WeatherSerializer(data)
     #         return Response(serializer.data)
     #     else:
-    #         return Response({"error": "Failed to fetch weather data"}, status=response.status_code)
+    #         return Response({"error": "Failed to fetch weather data"},status=response.status_code)
 
     def get(self, request):
         API_KEY = "6075f690e844e83ffc96d4ddf40c8b18"
@@ -68,7 +68,7 @@ class WeatherAPIView(APIView):
 
             if response.status_code == 200:
                 data = response.json()
-                cache.set(cache_key, data, timeout=60*20)  # cache 20 minutes
+                cache.set(cache_key, data, timeout=60 * 20)  # cache 20 minutes
                 cached_data = data
             else:
                 return Response(
