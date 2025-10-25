@@ -31,7 +31,7 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: Run Tests
-        run: docker compose run --rm --memory="2g" todoapp "flake8 && pytest"
+        run: docker compose exec todoapp sh -c "flake8 && pytest"
 
 
 
