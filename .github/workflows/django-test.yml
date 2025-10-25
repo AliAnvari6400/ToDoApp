@@ -31,8 +31,4 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: Run Tests
-        run: |
-           # Start Docker services
-           docker compose up -d --build
-           # Run linting and tests inside the container
-           docker compose exec todoapp sh -c "flake8 && pytest"
+        run: docker compose exec todoapp sh -c "flake8 && pytest"
