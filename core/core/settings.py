@@ -27,12 +27,13 @@ SECRET_KEY = config("SECRET_KEY", default="test")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", cast=bool, default=True)
 
-ALLOWED_HOSTS = config(
-    "ALLOWED_HOSTS",
-    cast=lambda v: [s.strip() for s in v.split(",")],
-    default="*",
-)
+# ALLOWED_HOSTS = config(
+#     "ALLOWED_HOSTS",
+#     cast=lambda v: [s.strip() for s in v.split(",")],
+#     default="*",
+# )
 
+ALLOWED_HOSTS = ["188.121.119.203", "localhost"]
 
 # Application definition
 
