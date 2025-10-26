@@ -18,7 +18,7 @@ from django.core.cache import cache
 class TaskModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     serializer_class = TaskSerializer
-    #queryset = Task.objects.all()
+    queryset = Task.objects.all()
 
     filter_backends = [
         DjangoFilterBackend,
@@ -32,6 +32,7 @@ class TaskModelViewSet(viewsets.ModelViewSet):
     pagination_class = DefaultPagination
 
     def get_queryset(self):  # list items for only owner
+        from ...models import Task
         return Task.objects.filter(author__user=self.request.user)
 
 
