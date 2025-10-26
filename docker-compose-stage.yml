@@ -21,7 +21,7 @@ services:
     restart: always
     environment:
       - SECRET_KEY=test
-      - DEBUG=False
+      - DEBUG=True
       - DB_NAME=mydatabase
       - DB_USER=myuser
       - DB_PASSWORD=mypassword
