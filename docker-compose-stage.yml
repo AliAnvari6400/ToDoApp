@@ -9,7 +9,7 @@ services:
       sh -c "python manage.py makemigrations &&
              python manage.py migrate &&
              python manage.py collectstatic --noinput &&
-             gunicorn core.wsgi:application --bind 0.0.0.0:8000" 
+             gunicorn core.wsgi:application --bind 0.0.0.0:8000 --workers 2" 
     volumes:
       - ./core:/app
       - static-volume:/app/static
@@ -21,7 +21,7 @@ services:
     restart: always
     environment:
       - SECRET_KEY=test
-      - DEBUG=True
+      - DEBUG=False
       - DB_NAME=mydatabase
       - DB_USER=myuser
       - DB_PASSWORD=mypassword
