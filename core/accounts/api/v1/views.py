@@ -173,31 +173,31 @@ class ProfileAPIView(generics.RetrieveUpdateAPIView):
 
 
 # email send test:
-class TestEmailSend(GenericAPIView):
-    def get(self, request, *args, **kwargs):
-        user = request.user  # assuming user is authenticated
-        # added token for user in email:
-        token = self.get_token_for_user(user)
+# class TestEmailSend(GenericAPIView):
+#     def get(self, request, *args, **kwargs):
+#         user = request.user  # assuming user is authenticated
+#         # added token for user in email:
+#         token = self.get_token_for_user(user)
 
-        # Prepare email content
-        subject = "Welcome!"
-        from_email = "no-reply@example.com"
-        to_email = user.email
-        html_content = render_to_string(
-            "email/activation_email.html", {"token": token, "user": user}
-        )
-        text_content = strip_tags(html_content)
-        email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
-        email.attach_alternative(html_content, "text/html")
-        # email.send()
+#         # Prepare email content
+#         subject = "Welcome!"
+#         from_email = "no-reply@example.com"
+#         to_email = user.email
+#         html_content = render_to_string(
+#             "email/activation_email.html", {"token": token, "user": user}
+#         )
+#         text_content = strip_tags(html_content)
+#         email = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+#         email.attach_alternative(html_content, "text/html")
+#         # email.send()
 
-        EmailThread(email).start()  # send email via Thread class
+#         EmailThread(email).start()  # send email via Thread class
 
-        return Response({"detail": "Welcome email sent."}, status=status.HTTP_200_OK)
+#         return Response({"detail": "Welcome email sent."}, status=status.HTTP_200_OK)
 
-    def get_token_for_user(self, user):
-        refresh = RefreshToken.for_user(user)
-        return str(refresh.access_token)
+#     def get_token_for_user(self, user):
+#         refresh = RefreshToken.for_user(user)
+#         return str(refresh.access_token)
 
 
 # Activation:

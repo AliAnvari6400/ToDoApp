@@ -6,7 +6,6 @@ from .views import (
     ChangepasswordAPIView,
     ProfileAPIView,
     CustomObtainAuthToken,
-    TestEmailSend,
     ActivationApiView,
     ActivationResendApiView,
     ResetPasswordRequestAPIView,
@@ -60,5 +59,5 @@ urlpatterns = [
         name="reset-password-confirm",
     ),
     # Email Send Test:
-    path("test-email/", TestEmailSend.as_view(), name="test-email"),
+    # path("test-email/", TestEmailSend.as_view(), name="test-email"),
 ]
