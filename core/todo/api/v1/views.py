@@ -18,7 +18,7 @@ from django.core.cache import cache
 class TaskModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     serializer_class = TaskSerializer
-    queryset = Task.objects.all()
+    #queryset = Task.objects.all()
 
     filter_backends = [
         DjangoFilterBackend,
