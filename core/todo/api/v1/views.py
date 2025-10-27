@@ -2,7 +2,7 @@ from .serializers import TaskSerializer, WeatherSerializer
 from ...models import Task
 from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated
-# from .permissions import IsOwnerOrReadOnly
+from .permissions import IsOwnerOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from .paginations import DefaultPagination
 from rest_framework.views import APIView
@@ -16,8 +16,7 @@ from django.core.cache import cache
 
 
 class TaskModelViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    # IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     serializer_class = TaskSerializer
     # queryset = Task.objects.all()
 
@@ -39,6 +38,8 @@ class TaskModelViewSet(viewsets.ModelViewSet):
         if getattr(self, 'swagger_fake_view', False):
             return Task.objects.none()
         user = self.request.user
+        if user.is_anonymous:
+            return Task.objects.none()
         return Task.objects.filter(author__user=user).order_by('-id')
 
 
