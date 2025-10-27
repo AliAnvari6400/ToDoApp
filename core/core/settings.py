@@ -27,11 +27,14 @@ SECRET_KEY = config("SECRET_KEY", default="test")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", cast=bool, default=True)
 
-ALLOWED_HOSTS = config(
-    "ALLOWED_HOSTS",
-    cast=lambda v: [s.strip() for s in v.split(",")],
-    default="*",
-)
+# ALLOWED_HOSTS = config(
+#     "ALLOWED_HOSTS",
+#     cast=lambda v: [s.strip() for s in v.split(",")],
+#     default="*",
+# )
+
+ALLOWED_HOSTS = ["188.121.119.203", "127.0.0.1"]
+
 
 # Application definition
 
@@ -199,7 +202,11 @@ EMAIL_HOST_USER = ""
 EMAIL_HOST_PASSWORD = ""
 
 # api access:
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://188.121.119.203",
+    
+]
+# CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = ['http://188.121.119.203']
 # SESSION_COOKIE_SAMESITE = 'None'
