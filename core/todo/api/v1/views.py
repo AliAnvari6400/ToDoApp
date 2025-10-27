@@ -31,9 +31,14 @@ class TaskModelViewSet(viewsets.ModelViewSet):
 
     pagination_class = DefaultPagination
 
-    def get_queryset(self):  # list items for only owner
-        from ...models import Task
-        return Task.objects.filter(author__user=self.request.user)
+    # def get_queryset(self):  # list items for only owner
+    #     from ...models import Task
+    #     return Task.objects.filter(author__user=self.request.user)
+    def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Task.objects.none()
+        user = self.request.user
+        return Task.objects.filter(author__user=user).order_by('-id')
 
 
 # Weather API:
