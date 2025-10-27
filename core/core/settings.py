@@ -199,7 +199,22 @@ EMAIL_HOST_USER = ""
 EMAIL_HOST_PASSWORD = ""
 
 # api access:
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://188.121.119.203",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://188.121.119.203",
+]
+
+SESSION_COOKIE_SECURE = False  # True if HTTPS
+CSRF_COOKIE_SECURE = False     # True if HTTPS
+SESSION_COOKIE_SAMESITE = "Lax"  # or "None" if cross-domain
+
 
 # Celery:
 CELERY_BROKER_URL = "redis://redis:6379/1"  # Redis URL as broker

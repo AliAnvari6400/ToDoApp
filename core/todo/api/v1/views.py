@@ -1,8 +1,8 @@
 from .serializers import TaskSerializer, WeatherSerializer
 from ...models import Task
 from rest_framework import viewsets, filters
-# from rest_framework.permissions import IsAuthenticated
-# from .permissions import IsOwnerOrReadOnly
+from rest_framework.permissions import IsAuthenticated
+from .permissions import IsOwnerOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from .paginations import DefaultPagination
 from rest_framework.views import APIView
@@ -13,11 +13,10 @@ from rest_framework.response import Response
 # from django.utils.decorators import method_decorator
 # from django.views.decorators.cache import cache_page
 from django.core.cache import cache
-from rest_framework.permissions import AllowAny
+
 
 class TaskModelViewSet(viewsets.ModelViewSet):
-    #  permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     serializer_class = TaskSerializer
     # queryset = Task.objects.all()
 
@@ -36,12 +35,12 @@ class TaskModelViewSet(viewsets.ModelViewSet):
     #     from ...models import Task
     #     return Task.objects.filter(author__user=self.request.user)
     def get_queryset(self):
-        if getattr(self, 'swagger_fake_view', False):
+        if getattr(self, "swagger_fake_view", False):
             return Task.objects.none()
         user = self.request.user
         if user.is_anonymous:
             return Task.objects.none()
-        return Task.objects.filter(author__user=user).order_by('-id')
+        return Task.objects.filter(author__user=user).order_by("-id")
 
 
 # Weather API:
