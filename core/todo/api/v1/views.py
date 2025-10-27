@@ -1,8 +1,8 @@
 from .serializers import TaskSerializer, WeatherSerializer
 from ...models import Task
 from rest_framework import viewsets, filters
-from rest_framework.permissions import IsAuthenticated
-from .permissions import IsOwnerOrReadOnly
+# from rest_framework.permissions import IsAuthenticated
+# from .permissions import IsOwnerOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from .paginations import DefaultPagination
 from rest_framework.views import APIView
@@ -13,10 +13,11 @@ from rest_framework.response import Response
 # from django.utils.decorators import method_decorator
 # from django.views.decorators.cache import cache_page
 from django.core.cache import cache
-
+from rest_framework.permissions import AllowAny
 
 class TaskModelViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    #  permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [AllowAny]
     serializer_class = TaskSerializer
     # queryset = Task.objects.all()
 
