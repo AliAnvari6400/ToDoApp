@@ -19,7 +19,7 @@ class TaskModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     # , IsOwnerOrReadOnly]
     serializer_class = TaskSerializer
-    queryset = Task.objects.all()
+    # queryset = Task.objects.all()
 
     filter_backends = [
         DjangoFilterBackend,
@@ -36,12 +36,12 @@ class TaskModelViewSet(viewsets.ModelViewSet):
     #     from ...models import Task
     #     return Task.objects.filter(author__user=self.request.user)
 
-    # def get_queryset(self):
-    #     user = self.request.user
-    #     # Prevent 500 if user is anonymous
-    #     if getattr(self, 'swagger_fake_view', False) or user.is_anonymous:
-    #         return Task.objects.none()
-    #     return Task.objects.filter(author__user=user).order_by('-id')
+    def get_queryset(self):
+        user = self.request.user
+        # Prevent 500 if user is anonymous
+        if getattr(self, 'swagger_fake_view', False) or user.is_anonymous:
+            return Task.objects.none()
+        return Task.objects.filter(author__user=user).order_by('-id')
 
 
 # Weather API:
