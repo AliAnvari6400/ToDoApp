@@ -5,7 +5,7 @@ from django.urls import reverse
 # Create Task model:
 class Task(models.Model):
     author = models.ForeignKey("accounts.Profile", on_delete=models.CASCADE)
-    title = models.CharField(max_length=250, blank=True, null=True)
+    title = models.CharField(max_length=250,default="test")
     status = models.BooleanField(default=False)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
