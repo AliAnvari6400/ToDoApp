@@ -2,7 +2,7 @@ from .serializers import TaskSerializer, WeatherSerializer
 from ...models import Task
 from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsOwnerOrReadOnly
+# from .permissions import IsOwnerOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from .paginations import DefaultPagination
 from rest_framework.views import APIView
@@ -16,7 +16,8 @@ from django.core.cache import cache
 
 
 class TaskModelViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated]
+    # , IsOwnerOrReadOnly]
     serializer_class = TaskSerializer
     # queryset = Task.objects.all()
 
