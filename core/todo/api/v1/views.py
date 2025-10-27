@@ -35,12 +35,9 @@ class TaskModelViewSet(viewsets.ModelViewSet):
     #     from ...models import Task
     #     return Task.objects.filter(author__user=self.request.user)
     def get_queryset(self):
-        if getattr(self, "swagger_fake_view", False):
+        if getattr(self, 'swagger_fake_view', False) or self.request.user.is_anonymous:
             return Task.objects.none()
-        user = self.request.user
-        if user.is_anonymous:
-            return Task.objects.none()
-        return Task.objects.filter(author__user=user).order_by("-id")
+        return Task.objects.filter(author__user=self.request.user).order_by('-id')
 
 
 # Weather API:
