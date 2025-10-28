@@ -37,6 +37,6 @@ jobs:
           script: |
             cd todoapp
             docker compose -f docker-compose-stage.yml stop
-            git pull -u origin master
+            git pull origin master
             docker compose -f docker-compose-stage.yml restart
 
