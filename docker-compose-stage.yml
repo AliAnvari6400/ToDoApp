@@ -123,5 +123,3 @@ volumes:
   postgres_data:
   static-volume:
   media-volume:
-
-#test3
