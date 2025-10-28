@@ -40,5 +40,3 @@ jobs:
             git pull -u origin master
             docker compose -f docker-compose-stage.yml restart
 
-
-
